@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="text-center">
+	<h3>Welcome, {{ nickname }} !<h3>
+</div>
+	
+
+{% if groupnameList == [] %}
+<h3>You don't own any group yet!</h3>
+	{% else %}
+		<div class="panel panel-primary panel-transparent" style="        outline:none!important;">
+			  <div class="panel-heading text-center">
+			    <h3 class="panel-title">Manage your groups</h3>
+			  </div>
+
+			  <div class="panel-body">
+
+
+
+						{% for ele in groupnameList %}
+								<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
+
+				    			<a href="modify/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
+				    			</form>
+				    	{% endfor %}
+
+
+
+	          </div>
+	    </div>  
+
+       
+
+	{% endif %}
+
+{% if grouplist == [] or grouplist == None %}
+
+<h3>You don't have any group yet!</h3>
+{% else %}
+ <div class="panel panel-primary panel-transparent" style="        outline:none!important;">
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">view your groups</h3>
+		  </div>
+
+		  <div class="panel-body">
+
+
+
+					{% for ele in grouplist %}
+							<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
+
+			    			<a href="groupinfo/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
+			    			</form>
+			    	{% endfor %}
+
+
+
+          </div>
+ </div>
+ {% endif %}
+
+
+
+
+
+
+
+{% endblock %}

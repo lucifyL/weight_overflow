@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div>waiting list:</div>
+
+<div>      
+
+		{% if group.waitlist != None %}
+		<ul>
+				<li>group name is {{ group.groupname }}</li>	
+				<li>wait list: 
+					{% for ppl in group.waitlist.split(',') %}
+						<div>{{ ppl }}</div>
+						<form>
+							<a href="{{ ppl }},approved,{{ group.groupname }}">approve</a>
+
+							<a href="{{ ppl }},deny,{{ group.groupname }}">deny</a>
+						</form>
+					{% endfor %}</li>
+
+
+
+
+		</ul>
+		{% endif %}
+
+
+
+
+
+
+
+
+</div>
+
+<div>member list:</div>
+<div>
+{% for ele in group.members.split(',') %}
+<div>
+	{{ ele }}
+	{% if ele != group.owner %}
+	<form>
+		<a class="btn btn-default text-center" href="{{ ele }},{{ group.groupname }}"> kick</a>
+
+	</form>
+	{% endif %}
+</div>	
+
+
+{% endfor %}
+</div>
+
+
+{% endblock %}

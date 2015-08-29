@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+
+		    <div class="row vertical-center-row" style="margin-top:100px;">
+		        
+
+		                <form class="register" action="{{ url_for('register') }}" method=post>
+		                	{{ form.hidden_tag() }}
+
+							{{ form.nickname(class="table",placeholder="Nickname") }}
+
+								{% for message in form.nickname.errors %}
+								    <div class="flash">{{ message }}</div>
+								{% endfor %}
+
+							{{ form.email(class="table",placeholder="Email") }}
+								{% for message in form.email.errors %}
+								    <div class="flash">{{ message }}</div>
+								{% endfor %}
+							
+							{{ form.password(class="table", placeholder="Password") }}
+
+							  {% for message in form.password.errors %}
+							    <div class="flash">{{ message }}</div>
+							  {% endfor %}
+
+							{{ form.confirm(class="table", placeholder="repeat password") }}
+
+							  {% for message in form.password.errors %}
+							    <div class="flash">{{ message }}</div>
+							  {% endfor %}
+							
+							{{ form.submit(class="btn btn-success btn-sm", value="Join") }}
+		                </form>
+
+		                {{ picture }}
+
+		        </div>
+		    </div>
+
+{% endblock %}

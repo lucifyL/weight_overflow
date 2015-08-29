@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="text-center">
+	<h3>Welcome, {{ nickname }} !<h3>
+</div>
+	
+
+{% if empty == true %}
+<h3>No available groups.</h3>
+	{% else %}
+		<div class="panel panel-primary panel-transparent" style="        outline:none!important;">
+			  <div class="panel-heading text-center">
+			    <h3 class="panel-title">Choose from existed groups</h3>
+			  </div>
+
+			  <div class="panel-body">
+
+
+
+
+			            <form  class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;" >
+						{% for ele in groups %}
+
+				    			<a href="joined/{{ ele.groupname }}" class="btn btn-default text-center"> {{ ele.groupname }}</a>
+				    			
+
+				    	{% endfor %}
+						</form>
+
+
+	          </div>
+	{% endif %}
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

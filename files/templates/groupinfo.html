@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="text-center">
+	<h3>Welcome, {{ nickname }} !<h3>
+</div>
+	
+
+
+<div class="panel panel-primary panel-transparent" style="outline:none!important;">
+	  <div class="panel-heading text-center">
+	    <h3 class="panel-title">this is your group: {{ groupname }}</h3>
+	  </div>
+
+	  <div class="panel-body">
+
+
+
+
+		
+			  <table class="table">
+			    <thead>
+			      <tr>
+			        <th>name</th>
+			        <th>begin date</th>
+			        <th>begin weight</th>
+			        <th>last updated date</th>
+			        <th>last updated weight</th>
+			        <th>loss percentage</th>
+			      </tr>
+			    </thead>
+			    {% for ele in groupWeightInfo %}
+				    <tbody>
+				      <tr class="info">
+				        <td>{{ ele[0] }}</td>
+				        <td>{{ ele[1] }}</td>
+				        <td>{{ ele[2] }}</td>
+				        <td>{{ ele[3] }}</td>
+				        <td>{{ ele[4] }}</td>
+				        <td>{{ ele[5] }}</td>
+				      </tr>
+				    </tbody>
+				 {% endfor %}
+			  </table>
+
+
+
+
+
+<div class="row vertical-center-row" style="margin-top:100px;">
+		        
+
+	                <form class="groupinfo" action="{{ url_for('.groupinfo',groupname=groupname) }}" method=post>
+		                	{{ form.hidden_tag() }}
+
+							{{ form.todaysweight(class="table",placeholder="enter weight for today") }}
+
+								{% for message in form.todaysweight.errors %}
+								    <div class="flash">{{ message }}</div>
+								{% endfor %}
+							
+							
+		               
+								<div>use default to keep your current timezone information, or choose a new timezone</div>
+
+								
+							{{ form.timezone(class="table") }}
+									{% for message in form.timezone.errors %}
+								   	 <div class="flash">{{ message }}</div>
+									{% endfor %}
+								
+
+								{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
+							</form>
+
+
+		     
+</div>
+
+</body>
+</html>
+
+
+
+      </div>
+</div>  
+
+
+
+
+
+
+
+
+{% endblock %}

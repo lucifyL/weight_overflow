@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+ <div class="row vertical-center-row" style="margin-top:100px;">
+		        
+
+		                <form class="creategroup" action="{{ url_for('creategroup') }}" method=post>
+		                	{{ form.hidden_tag() }}
+
+							{{ form.groupname(class="table",placeholder="group name") }}
+
+								{% for message in form.groupname.errors %}
+								    <div class="flash">{{ message }}</div>
+							{% endfor %}
+							
+							{{ form.submit(class="btn btn-success btn-sm", value="create") }}
+		                </form>
+
+		        </div>
+		    </div>
+{% endblock %}

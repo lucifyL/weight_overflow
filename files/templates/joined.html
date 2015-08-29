@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+{% if inlist %}
+
+you are already in the group or you are already applied
+
+{% else %}
+<div>you successful applied for the group:</div>
+<div>{{ groupname }} </div>
+
+{% endif %}
+
+
+
+
+{% endblock %}
