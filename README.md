@@ -1,9 +1,8 @@
 # weight_overflow
 
 
-##
-this is a weight control program that record weights
-##
+## this is a weight control program that record weights
+
 
 ###
 function done:
