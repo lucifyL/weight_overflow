@@ -196,8 +196,11 @@ def groupinfo(groupname):
                 db.session.add(newWeight)
                 db.session.commit()
             if user != None:
-                #days that this ppl is not recording the weight info
-                dateDifference = (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days
+                #days that this ppl is not recording the weight info, this will remain the same if
+                #ppl try to modify today's weight.
+                temp = (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days
+                if temp > 0:
+                    user.daysAbsent = temp
                 
                 #check if user have already entered today's weight
                 exist = False
@@ -209,19 +212,19 @@ def groupinfo(groupname):
                 else:
                     user.lastupdated = datetime.now(pytz.timezone(form.timezone.data)).date()
                     user.timezone = form.timezone.data
-                
+                #delete data back to last recorded time
                 if exist:
                     temp = user.weight.split(',')
-                    temp.pop()
-                    temp.append(form.todaysweight.data)
+                    for i in range(0,user.daysAbsent):
+                        temp.pop()
                     user.weight = ','.join(temp)
-                else:
-                    last = int(user.weight.split(",")[-1])
-                    now = int(form.todaysweight.data)
-                    differenceEachDay = (now - last)/dateDifference
-                    for i in range(1,dateDifference):
-                        user.weight += "," + str(i * differenceEachDay + last)
-                    user.weight += "," + form.todaysweight.data
+                #add data back to database
+                last = float(user.weight.split(",")[-1])
+                now = float(form.todaysweight.data)
+                differenceEachDay = (now - last)/user.daysAbsent
+                for i in range(1,user.daysAbsent):
+                    user.weight += "," + str(i * differenceEachDay + last)
+                user.weight += "," + form.todaysweight.data
                 db.session.commit()
 
                 lasttime = user.lastupdated

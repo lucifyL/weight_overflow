@@ -52,8 +52,9 @@ class Weight(db.Model):
     groups = db.Column(db.String(1000))
     timezone = db.Column(db.String(50))
     nickname = db.Column(db.String(50))
+    daysAbsent = db.Column(db.Integer)
     
-    def __init__(self, email,weight, begindate, lastupdated, groups,nickname, timezone):
+    def __init__(self, email,weight, begindate, lastupdated, groups,nickname, timezone, daysAbsent):
         self.email = email
         self.weight = weight
         self.begindate = begindate
@@ -61,3 +62,4 @@ class Weight(db.Model):
         self.groups = groups
         self.nickname = nickname
         self.timezone = timezone
+        self.daysAbsent = 0
