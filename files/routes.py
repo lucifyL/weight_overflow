@@ -6,7 +6,7 @@ from sqlalchemy import func
 from datetime import datetime, date, timedelta
 import pytz
 import matplotlib.pyplot as plt
-import random
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -246,70 +246,100 @@ def groupinfo(groupname):
             info.append(lossPercentage)
             groupWeightInfo.append(info)
 
+    week = False
+    month = False
 
-
-
-
-    def rn():
-        return random.random() * 2
-    base = 0
-
-    ppl1 = []
-    ppl2 = []
-    ppl3 = []
-    ppl4 = []
-    ppl5 = []
-    x = []
-    for i in range(1,10):
+    currentUser = Weight.query.filter_by(email=session['email']).first()
+    activeDays = (currentUser.lastupdated - currentUser.begindate).days
     
-        base += rn()
-        ppl1.append(base)
 
-    base = 0
-    for i in range(1,10):
-    
-        base += rn()
-        ppl2.append(base)
+    matrixInfo = []
+    weightInfo = []
+    for ele in members:
+        weight = Weight.query.filter_by(email=ele).first()
+        weightInfo.append(weight.email)
+        temp = weight.weight.split(",")
+        daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
+        for i in range (0,daysDifferent):
+            temp.pop()
+        weightInfo += temp
+        matrixInfo.append(weightInfo)
+        weightInfo = []
 
-    base = 0
-    for i in range(1,10):
-    
-        base += rn()
-        ppl3.append(base)
-
-    base = 0
-    for i in range(1,10):
-    
-        base += rn()
-        ppl4.append(base)
-
-    base = 0
-    for i in range(1,10):
-    
-        base += rn()
-        ppl5.append(base)
-
-    for i in range(1,10):
-       x.append(i)
-
-    for i in range (0, len(ppl1)):
-        plt.plot(x[i], ppl1[i], linestyle="None", marker="o", markersize=10, color="red")
-        plt.plot(x[i], ppl2[i], linestyle="None", marker="o", markersize=8, color="blue")
-        plt.plot(x[i], ppl3[i], linestyle="None", marker="o", markersize=8, color="green")
-        plt.plot(x[i], ppl4[i], linestyle="None", marker="o", markersize=8, color="brown")
-        plt.plot(x[i], ppl5[i], linestyle="None", marker="o", markersize=8, color="purple")
-
-    plt.plot(x, ppl1, linestyle="-", color="red", linewidth = 3 , label = 'ppl1')
-    plt.plot(x, ppl2, linestyle="solid", color="blue", linewidth = 3 , label = 'ppl2')
-    plt.plot(x, ppl3, linestyle="solid", color="green", linewidth = 3 , label = 'ppl3')
-    plt.plot(x, ppl4, linestyle="solid", color="brown", linewidth = 3 , label = 'ppl4')
-    plt.plot(x, ppl5, linestyle="solid", color="purple", linewidth = 3 , label = 'ppl5')
-    plt.legend(loc='best')
-
-    picture = plt.figure()
+    def weekInfo():
+        result = []
+        for ele in matrixInfo:
+            if len(ele) > 7:
+                temp = []
+                temp.append(ele[0])
+                for i in range(1,8):
+                    temp.append(ele[i-8])
+                result.append(temp)
+        return result
 
 
-    return render_template('groupinfo.html',groupname = groupname, groupWeightInfo = groupWeightInfo, nickname = nickname,form=form, picture = picture)
+    def monthInfo():
+        result = []
+        for ele in matrixInfo:
+            if len(ele) > 30:
+                temp = []
+                temp.append(ele[0])
+                for i in range(1,31):
+                    temp.append(ele[i-31])
+                result.append(temp)
+        return result
+
+    colorPool = ["red","green","yellow","blue","black"]
+    if activeDays >= 6:
+        week = weekInfo()
+        x = []
+        for i in range(1,8):
+            x.append(i)
+        for i in range(0,7):
+            j = 0
+            for ele in week:
+                plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = colorPool[j])
+                j+=1
+        for i in range(0,7):
+            j = 0
+            for ele in week:
+                plt.plot(x,ele[1:], linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0] if i ==0 else "")
+                j+=1
+        plt.legend(loc='best')
+        plt.savefig("/Users/Lucify/Documents/git_repo/weight_overflow/files/weightgram/" + nickname + "week.png")
+        plt.clf()
+                         
+    if activeDays >= 29:
+        month= monthInfo()
+        x = []
+        for i in range(1,31):
+            x.append(i)
+        for i in range(0,30):
+            for ele in month:
+                plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = "red")
+        for i in range(0,30):
+            for ele in month:
+                plt.plot(x,ele[1:], linestyle="solid",color="red",linewidth=3,label=ele[0] if i ==0 else "")
+        plt.legend(loc='best')
+        plt.savefig("/Users/Lucify/Documents/git_repo/weight_overflow/files/weightgram/" + nickname + "month.png")
+        plt.clf()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return render_template('groupinfo.html',groupname = groupname, groupWeightInfo = groupWeightInfo, nickname = nickname,form=form, week=week, month = month)
 
 
 

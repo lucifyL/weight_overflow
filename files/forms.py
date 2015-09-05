@@ -95,6 +95,12 @@ class WeightForm(Form):
         if not user and self.timezone.data == "default":
             self.timezone.errors.append("first time pick zones")
             return False
+        try:
+            float(self.todaysweight.data)
+        except ValueError:
+            self.todaysweight.errors.append("please enter the weight correctly")
+            return False
+        
         return True
 
 

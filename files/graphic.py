@@ -58,4 +58,4 @@ plt.plot(x, ppl4, linestyle="solid", color="brown", linewidth = 3 , label = 'ppl
 plt.plot(x, ppl5, linestyle="solid", color="purple", linewidth = 3 , label = 'ppl5')
 plt.legend(loc='best')
 
-plt.savefig("/Users/Lucify/Documents/myProject/weightOverflow/files/weightgram/abcd.png")
+plt.savefig("/Users/Lucify/Documents/git_repo/weight_overflow/files/weightgram/abcd.png")
