@@ -71,28 +71,19 @@
 									{% endfor %}
 								
 
-								{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
-							</form>
-
-
-		     
+							{{ form.submit(class="btn btn-success btn-sm", value="refresh") }}
+					</form>
+</div>
+{% if number != "" %}
+<img src = "{{ url_for('static', filename = 'weightgram/' + nickname + '/w' + number + '.png') }}">    
+<img src = "{{ url_for('static', filename = 'weightgram/' + nickname + '/m' + number + '.png') }}">
+{% endif %}
 </div>
 
-{% if week != Flase %}
-	<img src = "weightgram/strawberrymonth.png">
-{% endif %}
 
 
 
 
-
-</body>
-</html>
-
-
-
-      </div>
-</div>  
 
 
 

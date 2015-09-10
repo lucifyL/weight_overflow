@@ -54,7 +54,7 @@ class Weight(db.Model):
     nickname = db.Column(db.String(50))
     daysAbsent = db.Column(db.Integer)
     
-    def __init__(self, email,weight, begindate, lastupdated, groups,nickname, timezone, daysAbsent):
+    def __init__(self, email,weight, begindate, lastupdated, groups,nickname, timezone):
         self.email = email
         self.weight = weight
         self.begindate = begindate

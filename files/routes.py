@@ -6,7 +6,7 @@ from sqlalchemy import func
 from datetime import datetime, date, timedelta
 import pytz
 import matplotlib.pyplot as plt
-
+import os,os.path
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -180,6 +180,7 @@ def modify(groupname):
 @app.route('/groupinfo/<groupname>', methods=['GET','POST'])
 def groupinfo(groupname):
     
+    number = ""
     group = Group.query.filter_by(groupname=groupname).first()
     members = group.members.split(',')
     user = User.query.filter_by(email = session['email']).first()
@@ -196,42 +197,41 @@ def groupinfo(groupname):
                 db.session.add(newWeight)
                 db.session.commit()
             if user != None:
-                #days that this ppl is not recording the weight info, this will remain the same if
-                #ppl try to modify today's weight.
+                #first day recording, if it's not the first day, go to else
                 temp = (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days
                 if temp > 0:
                     user.daysAbsent = temp
-                
-                #check if user have already entered today's weight
-                exist = False
-                if user.lastupdated == datetime.now(pytz.timezone(user.timezone)).date():
-                    exist = True
-                #check if user want to change their time zone info
-                if form.timezone.data == 'default':
-                    user.lastupdated = datetime.now(pytz.timezone(user.timezone)).date()
+                if user.daysAbsent == 0:
+                    user.weight = form.todaysweight.data
+                #after first day
                 else:
-                    user.lastupdated = datetime.now(pytz.timezone(form.timezone.data)).date()
-                    user.timezone = form.timezone.data
-                #delete data back to last recorded time
-                if exist:
-                    temp = user.weight.split(',')
-                    for i in range(0,user.daysAbsent):
-                        temp.pop()
-                    user.weight = ','.join(temp)
-                #add data back to database
-                last = float(user.weight.split(",")[-1])
-                now = float(form.todaysweight.data)
-                differenceEachDay = (now - last)/user.daysAbsent
-                for i in range(1,user.daysAbsent):
-                    user.weight += "," + str(i * differenceEachDay + last)
-                user.weight += "," + form.todaysweight.data
+                    #days that this ppl is not recording the weight info, this will remain the same if
+                    #ppl try to modify today's weight.
+                    #check if user have already entered today's weight
+                    exist = False
+                    if user.lastupdated == datetime.now(pytz.timezone(user.timezone)).date():
+                        exist = True
+                    #check if user want to change their time zone info
+                    if form.timezone.data == 'default':
+                        user.lastupdated = datetime.now(pytz.timezone(user.timezone)).date()
+                    else:
+                        user.lastupdated = datetime.now(pytz.timezone(form.timezone.data)).date()
+                        user.timezone = form.timezone.data
+                    #delete data back to last recorded time
+                    if exist:
+                        temp = user.weight.split(',')
+                        for i in range(0,user.daysAbsent):
+                            temp.pop()
+                        user.weight = ','.join(temp)
+                    #add data back to database
+                    last = float(user.weight.split(",")[-1])
+                    now = float(form.todaysweight.data)
+                    differenceEachDay = (now - last)/user.daysAbsent
+                    for i in range(1,user.daysAbsent):
+                        user.weight += "," + str(i * differenceEachDay + last)
+                    user.weight += "," + form.todaysweight.data
+        
                 db.session.commit()
-
-                lasttime = user.lastupdated
-                today = datetime.now(pytz.timezone(user.timezone)).date()
-
-
-
 
     for ele in members:
         weight = Weight.query.filter_by(email=ele).first()
@@ -250,81 +250,97 @@ def groupinfo(groupname):
     month = False
 
     currentUser = Weight.query.filter_by(email=session['email']).first()
-    activeDays = (currentUser.lastupdated - currentUser.begindate).days
-    
+    if currentUser is not None:
+        activeDays = (currentUser.lastupdated - currentUser.begindate).days
+        
 
-    matrixInfo = []
-    weightInfo = []
-    for ele in members:
-        weight = Weight.query.filter_by(email=ele).first()
-        weightInfo.append(weight.email)
-        temp = weight.weight.split(",")
-        daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
-        for i in range (0,daysDifferent):
-            temp.pop()
-        weightInfo += temp
-        matrixInfo.append(weightInfo)
+        matrixInfo = []
         weightInfo = []
+        for ele in members:
+            weight = Weight.query.filter_by(email=ele).first()
+            weightInfo.append(weight.email)
+            temp = weight.weight.split(",")
+            daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
+            for i in range (0,daysDifferent):
+                temp.pop()
+            weightInfo += temp
+            matrixInfo.append(weightInfo)
+            weightInfo = []
 
-    def weekInfo():
-        result = []
-        for ele in matrixInfo:
-            if len(ele) > 7:
-                temp = []
-                temp.append(ele[0])
-                for i in range(1,8):
-                    temp.append(ele[i-8])
-                result.append(temp)
-        return result
-
-
-    def monthInfo():
-        result = []
-        for ele in matrixInfo:
-            if len(ele) > 30:
-                temp = []
-                temp.append(ele[0])
-                for i in range(1,31):
-                    temp.append(ele[i-31])
-                result.append(temp)
-        return result
-
-    colorPool = ["red","green","yellow","blue","black"]
-    if activeDays >= 6:
-        week = weekInfo()
-        x = []
-        for i in range(1,8):
-            x.append(i)
-        for i in range(0,7):
-            j = 0
-            for ele in week:
-                plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = colorPool[j])
-                j+=1
-        for i in range(0,7):
-            j = 0
-            for ele in week:
-                plt.plot(x,ele[1:], linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0] if i ==0 else "")
-                j+=1
-        plt.legend(loc='best')
-        plt.savefig("/Users/Lucify/Documents/git_repo/weight_overflow/files/weightgram/" + nickname + "week.png")
-        plt.clf()
-                         
-    if activeDays >= 29:
-        month= monthInfo()
-        x = []
-        for i in range(1,31):
-            x.append(i)
-        for i in range(0,30):
-            for ele in month:
-                plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = "red")
-        for i in range(0,30):
-            for ele in month:
-                plt.plot(x,ele[1:], linestyle="solid",color="red",linewidth=3,label=ele[0] if i ==0 else "")
-        plt.legend(loc='best')
-        plt.savefig("/Users/Lucify/Documents/git_repo/weight_overflow/files/weightgram/" + nickname + "month.png")
-        plt.clf()
+        def weekInfo():
+            result = []
+            for ele in matrixInfo:
+                if len(ele) > 7:
+                    temp = []
+                    temp.append(ele[0])
+                    for i in range(1,8):
+                        temp.append(ele[i-8])
+                    result.append(temp)
+            return result
 
 
+        def monthInfo():
+            result = []
+            for ele in matrixInfo:
+                if len(ele) > 30:
+                    temp = []
+                    temp.append(ele[0])
+                    for i in range(1,31):
+                        temp.append(ele[i-31])
+                    result.append(temp)
+            return result
+
+        colorPool = ["red","green","yellow","blue","black"]
+        if activeDays >= 6:
+            week = weekInfo()
+            x = []
+            for i in range(1,8):
+                x.append(i)
+            for i in range(0,7):
+                j = 0
+                for ele in week:
+                    plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = colorPool[j])
+                    j+=1
+            for i in range(0,7):
+                j = 0
+                for ele in week:
+                    plt.plot(x,ele[1:], linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0] if i ==0 else "")
+                    j+=1
+            plt.legend(loc='best')
+            #check if file exist, if so delete this file and rename
+            file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/" + nickname
+            if os.path.exists(file):
+                filenumber = int(os.listdir(file)[0].split(".")[0][1:])
+                filenumber += 1
+                number = str(filenumber)
+                os.remove(file + "/w" + str(filenumber - 1) + ".png")
+                plt.savefig(file + "/w" + str(filenumber) + ".png")
+            else:
+                os.mkdir(file)
+                plt.savefig(file + "/w0.png")
+            plt.clf()
+                             
+        if activeDays >= 29:
+            month= monthInfo()
+            x = []
+            for i in range(1,31):
+                x.append(i)
+            for i in range(0,30):
+                for ele in month:
+                    plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = "red")
+            for i in range(0,30):
+                for ele in month:
+                    plt.plot(x,ele[1:], linestyle="solid",color="red",linewidth=3,label=ele[0] if i ==0 else "")
+            plt.legend(loc='best')
+            file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/" + nickname
+            if os.path.exists(file) and len(os.listdir(file)) > 1:
+                filenumber = int(os.listdir(file)[0].split(".")[0][1:])
+                filenumber += 1
+                os.remove(file + "/m" + str(filenumber - 1) + ".png")
+                plt.savefig(file + "/m" + str(filenumber) + ".png")
+            else:
+                plt.savefig(file + "/m0.png")
+            plt.clf()
 
 
 
@@ -339,7 +355,8 @@ def groupinfo(groupname):
 
 
 
-    return render_template('groupinfo.html',groupname = groupname, groupWeightInfo = groupWeightInfo, nickname = nickname,form=form, week=week, month = month)
+
+    return render_template('groupinfo.html',groupname = groupname, groupWeightInfo = groupWeightInfo, nickname = nickname,form=form, week=week, month = month, number = number)
 
 
 
