@@ -13,6 +13,12 @@
 								    <div class="flash">{{ message }}</div>
 								{% endfor %}
 
+							{{ form.target(class="table",placeholder="target weight") }}
+
+								{% for message in form.target.errors %}
+								    <div class="flash">{{ message }}</div>
+								{% endfor %}
+
 							{{ form.email(class="table",placeholder="Email") }}
 								{% for message in form.email.errors %}
 								    <div class="flash">{{ message }}</div>
@@ -33,7 +39,7 @@
 							{{ form.submit(class="btn btn-success btn-sm", value="Join") }}
 		                </form>
 
-		                {{ picture }}
+		          
 
 		        </div>
 		    </div>

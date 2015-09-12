@@ -8,62 +8,63 @@
 	
 
 {% if groupnameList == [] %}
-<h3>You don't own any group yet!</h3>
-	{% else %}
-		<div class="panel panel-primary panel-transparent" style="        outline:none!important;">
+	<h3>You don't own any group yet!</h3>
+{% else %}
+		<div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
 			  <div class="panel-heading text-center">
 			    <h3 class="panel-title">Manage your groups</h3>
 			  </div>
 
 			  <div class="panel-body">
-
-
-
 						{% for ele in groupnameList %}
 								<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
 
 				    			<a href="modify/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
 				    			</form>
 				    	{% endfor %}
-
-
-
 	          </div>
 	    </div>         
 
-	{% endif %}
+{% endif %}
 
 {% if grouplist == [] or grouplist == None %}
-
 <h3>You don't have any group yet!</h3>
 {% else %}
- <div class="panel panel-primary panel-transparent" style="        outline:none!important;">
+ <div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
 		  <div class="panel-heading text-center">
 		    <h3 class="panel-title">view your groups</h3>
 		  </div>
 
 		  <div class="panel-body">
-
-
-
 					{% for ele in grouplist %}
 							<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
-
 			    			<a href="groupinfo/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
 			    			</form>
 			    	{% endfor %}
-
-
-
           </div>
  </div>
  {% endif %}
 
+ <div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">edit your information</h3>
+		  </div>
 
-<img src = "{{ url_for('static', filename = 'weightgram/abc.jpeg') }}">    
+		  <div class="panel-body">
+		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
+		                	{{ form.hidden_tag() }}
 
+							{{ form.nickname(class="table",placeholder="change nickname") }}
 
+							{{ form.target(class="table",placeholder="change target weight") }}
 
+							{{ form.submit(class="btn btn-success btn-sm", value="edit") }}
+		                </form>
+          </div>
+
+</div>
 
 {% endblock %}

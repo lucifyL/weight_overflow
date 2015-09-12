@@ -28,6 +28,7 @@
 			        <th>last updated date</th>
 			        <th>last updated weight</th>
 			        <th>loss percentage</th>
+			        <th>target weight</th>
 			      </tr>
 			    </thead>
 			    {% for ele in groupWeightInfo %}
@@ -39,6 +40,7 @@
 				        <td>{{ ele[3] }}</td>
 				        <td>{{ ele[4] }}</td>
 				        <td>{{ ele[5] }}</td>
+				        <td>{{ ele[6] }}</td>
 				      </tr>
 				    </tbody>
 				 {% endfor %}
@@ -65,13 +67,13 @@
 								<div>use default to keep your current timezone information, or choose a new timezone</div>
 
 								
-							{{ form.timezone(class="table") }}
+							{{ form.timezone() }}
 									{% for message in form.timezone.errors %}
 								   	 <div class="flash">{{ message }}</div>
 									{% endfor %}
 								
 
-							{{ form.submit(class="btn btn-success btn-sm", value="refresh") }}
+							{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
 					</form>
 </div>
 {% if number != "" %}

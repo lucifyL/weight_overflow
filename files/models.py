@@ -13,13 +13,15 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
     pwdhash = db.Column(db.String(100))
     grouplist = db.Column(db.String(150))
+    target = db.Column(db.String(10))
     
-    def __init__(self, nickname, email, password):
+    def __init__(self, nickname, email, password, target):
         self.nickname = nickname
         self.email = email.lower()
         self.set_password(password)
         self.grouplist = ""
-        
+        self.target = target
+    
     def set_password(self, password):
         self.pwdhash = generate_password_hash(password)
     
@@ -53,8 +55,9 @@ class Weight(db.Model):
     timezone = db.Column(db.String(50))
     nickname = db.Column(db.String(50))
     daysAbsent = db.Column(db.Integer)
+    target = db.Column(db.String(10))
     
-    def __init__(self, email,weight, begindate, lastupdated, groups,nickname, timezone):
+    def __init__(self, email,weight, begindate, lastupdated, groups, nickname, timezone, target):
         self.email = email
         self.weight = weight
         self.begindate = begindate
@@ -63,3 +66,23 @@ class Weight(db.Model):
         self.nickname = nickname
         self.timezone = timezone
         self.daysAbsent = 0
+        self.target = target
+
+
+class Achieved(db.Model):
+    __tablename__ = 'achieved'
+
+    email = db.Column(db.String(50), primary_key = True)
+    nickname = db.Column(db.String(100))
+    begindate = db.Column(db.Date())
+    enddate = db.Column(db.Date())
+    beginweight = db.Column(db.String(10))
+    target = db.Column(db.String(10))
+
+    def __init__(self, email, nickname, begindate, enddate, beginweight,target):
+        self.email = email
+        self.nickname = nickname
+        self.begindate = begindate
+        self.enddate = enddate
+        self.beginweight = beginweight
+        self.target = target

@@ -1,13 +1,14 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, TextAreaField, SubmitField, validators, DateTimeField, ValidationError, PasswordField, SelectField
 from wtforms.validators import Required, AnyOf, NoneOf
-from models import db, User, Group, Weight
+from models import db, User, Group, Weight, Achieved
 from countries import countries
 from flask import session
 
 
 class SignupForm(Form):
-    nickname = TextField("Nickname",  [validators.Required("Please enter the user name.")])
+    nickname = TextField("Nickname", [validators.Required("Please enter the user name.")])
+    target = TextField("Target", [validators.Required("Please enter the target weight.")])
     email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
     password = PasswordField('New Password', [validators.Required("please enter your password"),validators.EqualTo('confirm', message='Passwords must match')
                                               ])
@@ -103,7 +104,17 @@ class WeightForm(Form):
         
         return True
 
+class EditForm(Form):
+    nickname = TextField("Nickname")
+    target = TextField("Target")
+    submit = SubmitField("edit")
 
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+    
+    def validate(self):
+        if not Form.validate(self):
+            return False
 
 
 

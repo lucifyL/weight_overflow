@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, session, redirect, url_for
-from forms import SignupForm, SigninForm, GroupForm, WeightForm
+from forms import SignupForm, SigninForm, GroupForm, WeightForm, EditForm
 from files import app
-from models import db, User, Group, Weight
+from models import db, User, Group, Weight, Achieved
 from sqlalchemy import func
 from datetime import datetime, date, timedelta
 import pytz
@@ -19,7 +19,7 @@ def register():
         if form.validate() == False:
             return render_template('register.html', form=form)
         else:
-            newuser = User(form.nickname.data, form.email.data, form.password.data)
+            newuser = User(form.nickname.data, form.email.data, form.password.data, form.target.data)
             db.session.add(newuser)
             db.session.commit()
             session['email'] = newuser.email
@@ -30,11 +30,11 @@ def register():
 @app.route('/profile', methods=['GET','POST'])
 def profile():
     if 'email' not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for('index'))
     if request.method == 'GET':
         user = User.query.filter_by(email = session['email']).first()
         if user is None:
-            return redirect(url_for('signin'))
+            return redirect(url_for('index'))
         else:
             groupnameList = []
             groupInfo = Group.query.filter_by(owner=session['email']).all()
@@ -45,7 +45,24 @@ def profile():
                 grouplist = user.grouplist.split(",")
             else:
                 grouplist = ""
-    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist)
+    form = EditForm()
+    if request.method == 'POST':
+        weight = Weight.query.filter_by(email = session['email']).first()
+        user = User.query.filter_by(email = session['email']).first()
+        if form.nickname.data != '':
+            if weight is not None:
+                weight.nickname = form.nickname.data
+            user.nickname = form.nickname.data
+        try:
+            float(form.target.data)
+            if weight is not None:
+                weight.target = form.target.data
+            user.target = form.target.data
+        except ValueError:
+            pass
+        db.session.commit()
+        return redirect(url_for('profile'))
+    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form)
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -191,18 +208,21 @@ def groupinfo(groupname):
     if request.method == "POST":
         if form.validate():
             user = Weight.query.filter_by(email = session['email']).first()
+            
             if user == None:
+                currentUser = User.query.filter_by(email = session['email']).first()
                 grouplist = User.query.filter_by(email = session['email']).first().grouplist
-                newWeight = Weight(session['email'],form.todaysweight.data,datetime.now(pytz.timezone(form.timezone.data)).date(),datetime.now(pytz.timezone(form.timezone.data)).date(),grouplist, nickname, form.timezone.data)
+                newWeight = Weight(session['email'],form.todaysweight.data,datetime.now(pytz.timezone(form.timezone.data)).date(),datetime.now(pytz.timezone(form.timezone.data)).date(),grouplist, nickname, form.timezone.data, currentUser.target)
                 db.session.add(newWeight)
                 db.session.commit()
+            
             if user != None:
                 #first day recording, if it's not the first day, go to else
                 temp = (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days
                 if temp > 0:
                     user.daysAbsent = temp
                 if user.daysAbsent == 0:
-                    user.weight = form.todaysweight.data
+                    user.weight = "%.2f"%(float(form.todaysweight.data))
                 #after first day
                 else:
                     #days that this ppl is not recording the weight info, this will remain the same if
@@ -228,10 +248,26 @@ def groupinfo(groupname):
                     now = float(form.todaysweight.data)
                     differenceEachDay = (now - last)/user.daysAbsent
                     for i in range(1,user.daysAbsent):
-                        user.weight += "," + str(i * differenceEachDay + last)
-                    user.weight += "," + form.todaysweight.data
-        
+                        user.weight += "," + "%.2f"%(i * differenceEachDay + last)
+                    user.weight += "," + "%.2f"%(form.todaysweight.data)
                 db.session.commit()
+            #put user's information into achieve table if they achieve their target weight
+            user = Weight.query.filter_by(email = session['email']).first()
+            if user.target is not None:
+                achieved = Achieved.query.filter_by(email = session['email']).first()
+                begin = float(user.weight.split(",")[0])
+                target = float(user.target)
+                #requirement to be recorded: not in the least, reached the target, loss more than 10% of ur body weight
+            if float(user.weight.split(",")[-1]) <= target and achieved == None and begin - target >= begin * 0.1:
+                    grats = Achieved(user.email, user.nickname, user.begindate,user.lastupdated,user.weight.split(",")[0],user.target)
+                    db.session.add(grats)
+                    db.session.commit()
+
+
+
+
+
+
 
     for ele in members:
         weight = Weight.query.filter_by(email=ele).first()
@@ -242,8 +278,9 @@ def groupinfo(groupname):
             info.append(weight.weight.split(",")[0])
             info.append(weight.lastupdated)
             info.append(weight.weight.split(",")[-1])
-            lossPercentage = (float(weight.weight.split(",")[0]) - float(weight.weight.split(",")[-1]))/float(weight.weight.split(",")[0])*100
+            lossPercentage = "%.2f"%((float(weight.weight.split(",")[0]) - float(weight.weight.split(",")[-1]))/float(weight.weight.split(",")[0])*100)
             info.append(lossPercentage)
+            info.append(weight.target)
             groupWeightInfo.append(info)
 
     week = False
@@ -258,14 +295,15 @@ def groupinfo(groupname):
         weightInfo = []
         for ele in members:
             weight = Weight.query.filter_by(email=ele).first()
-            weightInfo.append(weight.email)
-            temp = weight.weight.split(",")
-            daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
-            for i in range (0,daysDifferent):
-                temp.pop()
-            weightInfo += temp
-            matrixInfo.append(weightInfo)
-            weightInfo = []
+            if weight is not None:
+                weightInfo.append(weight.email)
+                temp = weight.weight.split(",")
+                daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
+                for i in range (0,daysDifferent):
+                    temp.pop()
+                weightInfo += temp
+                matrixInfo.append(weightInfo)
+                weightInfo = []
 
         def weekInfo():
             result = []
@@ -341,14 +379,6 @@ def groupinfo(groupname):
             else:
                 plt.savefig(file + "/m0.png")
             plt.clf()
-
-
-
-
-
-
-
-
 
 
 
