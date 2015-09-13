@@ -50,32 +50,7 @@
 
 
 
-<div class="row vertical-center-row" style="margin-top:100px;">
-		        
 
-	                <form class="groupinfo" action="{{ url_for('.groupinfo',groupname=groupname) }}" method=post>
-		                	{{ form.hidden_tag() }}
-
-							{{ form.todaysweight(class="table",placeholder="enter weight for today") }}
-
-								{% for message in form.todaysweight.errors %}
-								    <div class="flash">{{ message }}</div>
-								{% endfor %}
-							
-							
-		               
-								<div>use default to keep your current timezone information, or choose a new timezone</div>
-
-								
-							{{ form.timezone() }}
-									{% for message in form.timezone.errors %}
-								   	 <div class="flash">{{ message }}</div>
-									{% endfor %}
-								
-
-							{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
-					</form>
-</div>
 {% if number != "" %}
 <img src = "{{ url_for('static', filename = 'weightgram/' + nickname + '/w' + number + '.png') }}">    
 <img src = "{{ url_for('static', filename = 'weightgram/' + nickname + '/m' + number + '.png') }}">

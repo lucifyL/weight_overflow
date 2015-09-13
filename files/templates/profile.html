@@ -61,10 +61,44 @@
 
 							{{ form.target(class="table",placeholder="change target weight") }}
 
+							{{ form.timezone() }}
+
 							{{ form.submit(class="btn btn-success btn-sm", value="edit") }}
 		                </form>
           </div>
 
 </div>
+
+ <div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">record your weight today</h3>
+		  </div>
+
+		  <div class="panel-body">
+		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
+		                	{{ form1.hidden_tag() }}
+
+							{{ form1.todaysweight(class="table",placeholder="enter weight for today") }}
+
+								{% for message in form1.todaysweight.errors %}
+								    <div class="flash">{{ message }}</div>
+								{% endfor %}
+
+							{{ form1.submit(class="btn btn-success btn-sm", value="submit") }}
+		                </form>
+          </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
 
 {% endblock %}

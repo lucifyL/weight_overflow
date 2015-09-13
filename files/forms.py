@@ -9,6 +9,12 @@ from flask import session
 class SignupForm(Form):
     nickname = TextField("Nickname", [validators.Required("Please enter the user name.")])
     target = TextField("Target", [validators.Required("Please enter the target weight.")])
+    
+    timezoneinfo = []
+    for ele in countries:
+        timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
+    timezone = SelectField('timezone',choices=sorted(timezoneinfo))
+
     email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
     password = PasswordField('New Password', [validators.Required("please enter your password"),validators.EqualTo('confirm', message='Passwords must match')
                                               ])
@@ -70,15 +76,7 @@ class GroupForm(Form):
             return True
 
 class WeightForm(Form):
-    todaysweight = TextField("TodaysWeight", [validators.Required("Don't shy, how much did you eat last night?")])
-
-    
-    timezoneinfo = []
-    for ele in countries:
-        timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
-    result = [(('default'),('default'))]+sorted(timezoneinfo)
-
-    timezone = SelectField('timezone',choices=result)
+    todaysweight = TextField("TodaysWeight")
     submit = SubmitField("submit")
     
     def __init__(self, *args, **kwargs):
@@ -94,7 +92,7 @@ class WeightForm(Form):
         user = Weight.query.filter_by(email = session['email'].lower()).first()
 
         if not user and self.timezone.data == "default":
-            self.timezone.errors.append("first time pick zones")
+            self.todaysweight.errors.append("please pick your timezone before enter your weight")
             return False
         try:
             float(self.todaysweight.data)
@@ -108,6 +106,12 @@ class EditForm(Form):
     nickname = TextField("Nickname")
     target = TextField("Target")
     submit = SubmitField("edit")
+    timezoneinfo = []
+    for ele in countries:
+        timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
+    result = [(('default'),('default'))]+sorted(timezoneinfo)
+
+    timezone = SelectField('timezone',choices=result)
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -115,6 +119,14 @@ class EditForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False
+        try:
+            float(self.target.data)
+        except ValueError:
+            self.target.errors.append("please enter the targer weight correctly")
+            return False
+
+        return True
+
 
 
 
