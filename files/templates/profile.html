@@ -7,67 +7,7 @@
 </div>
 	
 
-{% if groupnameList == [] %}
-	<h3>You don't own any group yet!</h3>
-{% else %}
-		<div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
-			  <div class="panel-heading text-center">
-			    <h3 class="panel-title">Manage your groups</h3>
-			  </div>
-
-			  <div class="panel-body">
-						{% for ele in groupnameList %}
-								<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
-
-				    			<a href="modify/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
-				    			</form>
-				    	{% endfor %}
-	          </div>
-	    </div>         
-
-{% endif %}
-
-{% if grouplist == [] or grouplist == None %}
-<h3>You don't have any group yet!</h3>
-{% else %}
- <div class="panel panel-primary panel-transparent" style="outline:none!important;">
-
-		  <div class="panel-heading text-center">
-		    <h3 class="panel-title">view your groups</h3>
-		  </div>
-
-		  <div class="panel-body">
-					{% for ele in grouplist %}
-							<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
-			    			<a href="groupinfo/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
-			    			</form>
-			    	{% endfor %}
-          </div>
- </div>
- {% endif %}
-
- <div class="panel panel-primary panel-transparent" style="outline:none!important;">
-
-		  <div class="panel-heading text-center">
-		    <h3 class="panel-title">edit your information</h3>
-		  </div>
-
-		  <div class="panel-body">
-		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
-		                	{{ form.hidden_tag() }}
-
-							{{ form.nickname(class="table",placeholder="change nickname") }}
-
-							{{ form.target(class="table",placeholder="change target weight") }}
-
-							{{ form.timezone() }}
-
-							{{ form.submit(class="btn btn-success btn-sm", value="edit") }}
-		                </form>
-          </div>
-
-</div>
 
  <div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
@@ -96,28 +36,96 @@
 
 		  <div class="panel-heading text-center">
 		    <h3 class="panel-title">see your progress</h3>
-		    <p>select the days</p>
+		  </div>
+
+		  <div class="panel-body">
+		  {% if newuser == False %}
+		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
+		                	{{ form2.hidden_tag() }}
+		                	<p>select the days</p>
+							{{ form2.days(class = "dropdownbox1") }}
+
+							{{ form2.submit(class="btn btn-success btn-sm", value="submit") }}
+		        </form>
+
+          		{% if number != [""] %}
+					<img class = "img" src = "{{ url_for('static', filename = 'weightgram/users/' + nickname + '/w' + number + '.png') }}">   
+		  		{% endif %}
+
+		  {% else %}
+		 	 <div class="reminder"> you need to record your weight at least twice to see your progress</div>
+		  {% endif %}
+		  </div>
+</div>
+
+	
+
+
+
+ <div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">edit your information</h3>
 		  </div>
 
 		  <div class="panel-body">
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
-		                	{{ form2.hidden_tag() }}
+		                	{{ form.hidden_tag() }}
 
-							{{ form2.days }}
+							{{ form.nickname(class="table",placeholder="change nickname") }}
 
-							{{ form1.submit(class="btn btn-success btn-sm", value="submit") }}
-		        </form>
+							{{ form.target(class="table",placeholder="change target weight") }}
+
+							{% if timezoneRecorded == False %}
+							<div class = "reminder">click to setup your timezone below</div>
+							{{ form.timezone(class = "dropdownbox") }}
+							{% else %}
+							<div class = "reminder1">click to change your timezone below</div>
+							{{ form.timezone(class = "dropdownbox1") }}
+							{% endif %}
+
+							{{ form.submit(class="btn btn-success btn-sm", value="edit") }}
+		                </form>
           </div>
-
-          {% if number[0] != "" %}
-				<img class = "img" src = "{{ url_for('static', filename = 'weightgram/users/' + nickname + '/w' + number + '.png') }}">   
-		  {% endif %}
 
 </div>
 
 
+{% if groupnameList != [] %}
+	<div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">Manage your groups</h3>
+		  </div>
+
+		  <div class="panel-body">
+					{% for ele in groupnameList %}
+							<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
+
+			    			<a href="modify/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
+			    			</form>
+			    	{% endfor %}
+	      </div>
+	</div>         
+{% endif %}	
 
 
+{% if grouplist != [] and grouplist != None %}
+	 <div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
+			  <div class="panel-heading text-center">
+			    <h3 class="panel-title">view your groups</h3>
+			  </div>
+
+			  <div class="panel-body">
+						{% for ele in grouplist %}
+								<form class="btn-group-vertical"  style="width:50%;margin:0 auto;display:block;">
+				    			<a href="groupinfo/{{ ele }}" class="btn btn-default text-center" > {{ ele }}</a>
+				    			</form>
+				    	{% endfor %}
+	          </div>
+	 </div>
+ {% endif %}
 
 
 

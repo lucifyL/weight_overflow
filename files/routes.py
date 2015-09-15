@@ -16,6 +16,7 @@ def register():
     form = SignupForm()
         
     if request.method == 'POST':
+        
         if form.validate() == False:
             return render_template('register.html', form=form)
         else:
@@ -24,6 +25,7 @@ def register():
             db.session.commit()
             session['email'] = newuser.email
             return redirect(url_for('profile'))
+            raise
     elif request.method == 'GET':
         return render_template('register.html', form=form)
 
@@ -33,21 +35,19 @@ def register():
 def profile():
     if 'email' not in session:
         return redirect(url_for('index'))
-
+    groupnameList = []
+    grouplist = []
     user = User.query.filter_by(email = session['email']).first()
     nickname = user.nickname
     if user is None:
         return redirect(url_for('index'))
     else:
-        groupnameList = []
         groupInfo = Group.query.filter_by(owner=session['email']).all()
         if groupInfo is not None:
             for ele in groupInfo:
                 groupnameList.append(ele.groupname)
         if user.grouplist != "":
             grouplist = user.grouplist.split(",")
-        else:
-            grouplist = ""
 
     number = [""]
 
@@ -60,7 +60,7 @@ def profile():
             day = []
             labels = []
             reduce = (length / 30) + 1
-            plt.figure(figsize=(11.4, 4))
+            plt.figure(figsize=(12, 4))
             if length - daysFromLast > 1:
                 for i in range(0, daysFromLast):
                     recordarray.append(None)
@@ -105,7 +105,18 @@ def profile():
     form = EditForm()
     form1 = WeightForm()
     form2 = UserProgressForm()
-    
+    newuser = False
+    timezoneRecorded = False
+    weight = Weight.query.filter_by(email = session['email']).first()
+    if weight != None:
+        if len(weight.weight.split(",")) == 1:
+            newuser = True
+    else:
+        newuser = True
+    if user.timezone != None:
+        timezoneRecorded = True
+
+
     if request.method == 'POST':
         #for weight form
   
@@ -115,7 +126,7 @@ def profile():
             if user == None:
                 currentUser = User.query.filter_by(email = session['email']).first()
                 grouplist = User.query.filter_by(email = session['email']).first().grouplist
-                newWeight = Weight(session['email'],form1.todaysweight.data,datetime.now(pytz.timezone(form1.timezone.data)).date(),datetime.now(pytz.timezone(form1.timezone.data)).date(),grouplist, nickname, form1.timezone.data, currentUser.target)
+                newWeight = Weight(session['email'],form1.todaysweight.data,datetime.now(pytz.timezone(currentUser.timezone)).date(),datetime.now(pytz.timezone(currentUser.timezone)).date(),grouplist, nickname, currentUser.timezone, currentUser.target)
                 db.session.add(newWeight)
                 db.session.commit()
             
@@ -178,11 +189,16 @@ def profile():
                 user.target = form.target.data
             except ValueError:
                 pass
+            if form.timezone.data != "default":
+                user.timezone = form.timezone.data
+                if weight is not None:
+                    weight.timezone = form.timezone.data
             db.session.commit()
             return redirect(url_for('profile'))
 
 
         #for user process tracking form
+
         if form2.validate_on_submit() and form2.validate():
             if form2.days.data in ["7","30"]:
                 makePicture(int(form2.days.data))
@@ -193,10 +209,10 @@ def profile():
                 makePicture(days)
                 number = number[0]
         
+    
 
 
-
-    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number)
+    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number, newuser = newuser, timezoneRecorded = timezoneRecorded)
 
 
 

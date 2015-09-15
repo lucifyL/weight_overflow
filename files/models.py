@@ -14,6 +14,7 @@ class User(db.Model):
     pwdhash = db.Column(db.String(100))
     grouplist = db.Column(db.String(150))
     target = db.Column(db.String(10))
+    timezone = db.Column(db.String(50))
     
     def __init__(self, nickname, email, password, target):
         self.nickname = nickname
