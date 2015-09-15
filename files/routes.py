@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, session, redirect, url_for
-from forms import SignupForm, SigninForm, GroupForm, WeightForm, EditForm
+from forms import SignupForm, SigninForm, GroupForm, WeightForm, EditForm, UserProgressForm
 from files import app
 from models import db, User, Group, Weight, Achieved
 from sqlalchemy import func
@@ -7,7 +7,7 @@ from datetime import datetime, date, timedelta
 import pytz
 import matplotlib.pyplot as plt
 import os,os.path
-
+import numpy as np
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -35,6 +35,7 @@ def profile():
         return redirect(url_for('index'))
 
     user = User.query.filter_by(email = session['email']).first()
+    nickname = user.nickname
     if user is None:
         return redirect(url_for('index'))
     else:
@@ -48,54 +49,66 @@ def profile():
         else:
             grouplist = ""
 
-    weight = Weight.query.filter_by(email = session['email']).first()
-    week = False
-    month = False
+    number = [""]
 
-
-    if weight is not None:
-        weightInfo = weight.weight
-        daysFromNow = (datetime.now(pytz.timezone(user.timezone)).date() - weight.begindate).days
-        if daysFromNow > 6:
-            week = []
-            days = (datetime.now(pytz.timezone(user.timezone)).date() - weight.lastupdated).days
-            weekInfo = []
-            for i in range(0,7 - days):
-                weekInfo += weightInfo.pop()
-            weekInfo.reverse()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def makePicture(length):
+        weight = Weight.query.filter_by(email = session['email']).first()
+        if weight is not None:
+            daysFromLast = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.lastupdated).days
+            weightarray = weight.weight.split(",")
+            recordarray = []
+            day = []
+            labels = []
+            reduce = (length / 30) + 1
+            plt.figure(figsize=(11.4, 4))
+            if length - daysFromLast > 1:
+                for i in range(0, daysFromLast):
+                    recordarray.append(None)
+                for i in range(0, length - daysFromLast):
+                    if len(weightarray) > 0:
+                        recordarray.append(float(weightarray.pop()))
+                    else:
+                        recordarray.append(None)
+                recordarray.reverse()
+                for i in range(0, length):
+                    
+                    day.append(i)
+                    if reduce == 0 or i%reduce == 0:
+                        labels.append(str(datetime.now(pytz.timezone(weight.timezone)).date() - timedelta(i)))
+                labels.reverse()
+                for i in range(0, length):
+                    plt.plot(day[i],recordarray[i], linestyle="None",marker = "o", markersize = 8, color = "red")
+                    plt.plot(day, recordarray, linestyle="solid",color="green",linewidth=3,label=session['email'] if i ==0 else "")
+                plt.legend(loc='best')
+                file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/users/" + nickname
+                plt.xticks(day, labels, rotation=45)
+                plt.subplots_adjust(bottom=0.30)
+                if reduce != 0:
+                    plt.xticks(np.arange(min(day), max(day)+1, reduce))
+                if os.path.exists(file):
+                    filenumber = int(os.listdir(file)[0].split(".")[0][1:])
+                    filenumber += 1
+                    number[0] = str(filenumber)
+                    os.remove(file + "/w" + str(filenumber - 1) + ".png")
+                    plt.savefig(file + "/w" + str(filenumber) + ".png")
+                else:
+                    os.mkdir(file)
+                    plt.savefig(file + "/w0.png")
+                    number[0] = "0"
+                plt.clf()
+                return True
+            else:
+                return False
+        return False
 
 
     form = EditForm()
     form1 = WeightForm()
-
+    form2 = UserProgressForm()
+    
     if request.method == 'POST':
         #for weight form
-        raise
+  
         if form1.validate_on_submit() and form1.validate():
             user = Weight.query.filter_by(email = session['email']).first()
 
@@ -121,6 +134,8 @@ def profile():
                     exist = False
                     if user.lastupdated == datetime.now(pytz.timezone(user.timezone)).date():
                         exist = True
+                    else:
+                        user.lastupdated = datetime.now(pytz.timezone(user.timezone)).date()
                     #delete data back to last recorded time
                     if exist:
                         temp = user.weight.split(',')
@@ -167,27 +182,16 @@ def profile():
             return redirect(url_for('profile'))
 
 
+        #for user process tracking form
+        if form2.validate_on_submit() and form2.validate():
+            makePicture(int(form2.days.data))
+            number = number[0]
 
 
 
+    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1)
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():

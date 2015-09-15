@@ -92,6 +92,31 @@
 </div>
 
 
+ <div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">see your progress</h3>
+		    <p>select the days</p>
+		  </div>
+
+		  <div class="panel-body">
+		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
+		                	{{ form2.hidden_tag() }}
+
+							{{ form2.days }}
+
+							{{ form1.submit(class="btn btn-success btn-sm", value="submit") }}
+		        </form>
+          </div>
+
+          {% if number[0] != "" %}
+				<img class = "img" src = "{{ url_for('static', filename = 'weightgram/users/' + nickname + '/w' + number + '.png') }}">   
+		  {% endif %}
+
+</div>
+
+
+
 
 
 

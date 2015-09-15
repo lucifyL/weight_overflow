@@ -4,7 +4,7 @@ from wtforms.validators import Required, AnyOf, NoneOf
 from models import db, User, Group, Weight, Achieved
 from countries import countries
 from flask import session
-
+from files import app
 
 class SignupForm(Form):
     nickname = TextField("Nickname", [validators.Required("Please enter the user name.")])
@@ -127,6 +127,34 @@ class EditForm(Form):
 
         return True
 
+class UserProgressForm(Form):
 
+    submit = SubmitField("submit")
+    with app.app_context():
+        Weight.query.filter_by(email = session['email'].lower()).first()
+
+    
+    
+    
+    daysUsing = 9
+    result = []
+    for i in range(2, daysUsing):
+        
+        result.append((str(i),str(i)))
+
+    
+    
+    days = SelectField('days',choices = result)
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+
+    def validate(self):
+       
+        weight = Weight.query.filter_by(email = session['email'].lower()).first()
+
+        if not Form.validate(self):
+            return False
+        return True
 
 
