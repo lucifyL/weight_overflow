@@ -184,8 +184,15 @@ def profile():
 
         #for user process tracking form
         if form2.validate_on_submit() and form2.validate():
-            makePicture(int(form2.days.data))
-            number = number[0]
+            if form2.days.data in ["7","30"]:
+                makePicture(int(form2.days.data))
+                number = number[0]
+            elif form2.days.data == "max":
+                weight = Weight.query.filter_by(email = session['email']).first()
+                days = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days + 1
+                makePicture(days)
+                number = number[0]
+        
 
 
 

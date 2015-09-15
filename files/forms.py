@@ -130,31 +130,16 @@ class EditForm(Form):
 class UserProgressForm(Form):
 
     submit = SubmitField("submit")
-    with app.app_context():
-        Weight.query.filter_by(email = session['email'].lower()).first()
+    
+    result = [((7),("week")),((30),("month")),(("max"),("max"))]
 
-    
-    
-    
-    daysUsing = 9
-    result = []
-    for i in range(2, daysUsing):
-        
-        result.append((str(i),str(i)))
 
-    
-    
     days = SelectField('days',choices = result)
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
 
     def validate(self):
-       
-        weight = Weight.query.filter_by(email = session['email'].lower()).first()
-
-        if not Form.validate(self):
-            return False
         return True
 
 
