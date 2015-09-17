@@ -70,6 +70,18 @@ def profile():
                     else:
                         recordarray.append(None)
                 recordarray.reverse()
+                
+                def getfirst(array):
+                    for ele in array:
+                        if ele != None:
+                            return ele
+                def getlast(array):
+                    array.reverse()
+                    return getfirst(array)
+                
+                number[1] = getfirst(recordarray)
+                number[2] = getlast(recordarray)
+                recordarray.reverse()
                 for i in range(0, length):
                     
                     day.append(i)
@@ -107,6 +119,7 @@ def profile():
     form2 = UserProgressForm()
     newuser = False
     timezoneRecorded = False
+    message = ""
     weight = Weight.query.filter_by(email = session['email']).first()
     if weight != None:
         if len(weight.weight.split(",")) == 1:
@@ -118,6 +131,7 @@ def profile():
 
 
     if request.method == 'POST':
+        number = ["filenumber","startweight","finishweight"]
         #for weight form
   
         if form1.validate_on_submit() and form1.validate():
@@ -201,18 +215,30 @@ def profile():
 
         if form2.validate_on_submit() and form2.validate():
             if form2.days.data in ["7","30"]:
+                
                 makePicture(int(form2.days.data))
+
+                loss = number[1] - number[2]
+                if loss < 0:
+                    message = "Seriously? are you really try to lose weight?"
+                else:
+                    message = "You lose " + "%.2f"%(loss) + " Kg in " + form2.days.data + " days"
+
                 number = number[0]
             elif form2.days.data == "max":
                 weight = Weight.query.filter_by(email = session['email']).first()
                 days = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days + 1
                 makePicture(days)
+                
+                loss = number[1] - number[2]
+                if loss < 0:
+                    message = "Seriously? are you really try to lose weight?"
+                else:
+                    
+                    message = "You lose " + "%.2f"%(loss) + " Kg in " + str(len((Weight.query.filter_by(email = session['email']).first()).weight.split(","))) + " days"
                 number = number[0]
-        
-    
 
-
-    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number, newuser = newuser, timezoneRecorded = timezoneRecorded)
+    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number, newuser = newuser, timezoneRecorded = timezoneRecorded, message = message)
 
 
 
