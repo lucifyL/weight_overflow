@@ -42,7 +42,7 @@
 		  {% if newuser == False %}
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form2.hidden_tag() }}
-		                	<p>select the days</p>
+		                	<p class = "reminder1">select the days</p>
 							{{ form2.days(class = "dropdownbox1") }}
 
 							{{ form2.submit(class="btn btn-success btn-sm", value="submit") }}
