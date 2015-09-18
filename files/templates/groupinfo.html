@@ -22,16 +22,15 @@
 			  <table class="table">
 			    <thead>
 			      <tr>
+			      	<th>rank</th>
 			        <th>name</th>
-			        <th>begin date</th>
 			        <th>begin weight</th>
-			        <th>last updated date</th>
 			        <th>last updated weight</th>
 			        <th>loss percentage</th>
-			        <th>target weight</th>
+			        <th>loss weight</th>
 			      </tr>
 			    </thead>
-			    {% for ele in groupWeightInfo %}
+			    {% for ele in groupPartalInfo %}
 				    <tbody>
 				      <tr class="info">
 				        <td>{{ ele[0] }}</td>
@@ -40,7 +39,6 @@
 				        <td>{{ ele[3] }}</td>
 				        <td>{{ ele[4] }}</td>
 				        <td>{{ ele[5] }}</td>
-				        <td>{{ ele[6] }}</td>
 				      </tr>
 				    </tbody>
 				 {% endfor %}

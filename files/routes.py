@@ -8,6 +8,7 @@ import pytz
 import matplotlib.pyplot as plt
 import os,os.path
 import numpy as np
+from operator import itemgetter
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -381,7 +382,7 @@ def groupinfo(groupname):
     user = User.query.filter_by(email = session['email']).first()
     nickname = user.nickname
     groupWeightInfo = []
-#    form = WeightForm(request.form)
+    form = WeightForm(request.form)
 
 #    if request.method == "POST":
 #        if form.validate():
@@ -443,6 +444,52 @@ def groupinfo(groupname):
 
 
 
+    groupTotalInfo = []
+    groupPartalInfo = []
+
+
+    def makeForm(days):
+        groupPartalInfo = []
+        for ele in members:
+            weight = Weight.query.filter_by(email=ele).first()
+            if weight is not None:
+                daysFromLast = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.lastupdated).days
+                weightarray = weight.weight.split(",")
+                firstday = weightarray[daysFromLast - days]
+                lastday = weightarray[-1]
+                
+                
+                info = []
+                info.append(weight.nickname)
+                info.append(firstday)
+                info.append(lastday)
+                lossPercentage = "%.2f"%((float(firstday) - float(lastday))/float(firstday)*100)
+                info.append(float(firstday) - float(lastday))
+                info.append(float(lossPercentage))
+
+                groupPartalInfo.append(info)
+        groupPartalInfo.sort(key=(itemgetter(-2)),reverse=True)
+        for i in xrange (len(groupPartalInfo)):
+            groupPartalInfo[i] = [i + 1] + groupPartalInfo[i]
+        
+        return groupPartalInfo
+
+
+    groupPartalInfo = makeForm(14)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -457,152 +504,153 @@ def groupinfo(groupname):
             info.append(weight.lastupdated)
             info.append(weight.weight.split(",")[-1])
             lossPercentage = "%.2f"%((float(weight.weight.split(",")[0]) - float(weight.weight.split(",")[-1]))/float(weight.weight.split(",")[0])*100)
-            info.append(lossPercentage)
+            info.append(float(lossPercentage))
             info.append(weight.target)
-            groupWeightInfo.append(info)
+            groupTotalInfo.append(info)
+    groupTotalInfo.sort(key=(itemgetter(-2)), reverse = True)
 
     week = False
     month = False
     #picture information gathered from bere
     currentUser = Weight.query.filter_by(email=session['email']).first()
-    if currentUser is not None:
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        activeDays = (currentUser.lastupdated - currentUser.begindate).days
-        
+#    if currentUser is not None:
 
-        matrixInfo = []
-        weightInfo = []
-        for ele in members:
-            weight = Weight.query.filter_by(email=ele).first()
-            if weight is not None:
-                weightInfo.append(weight.email)
-                temp = weight.weight.split(",")
-                daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
-                for i in range (0,daysDifferent):
-                    temp.pop()
-                weightInfo += temp
-                matrixInfo.append(weightInfo)
-                weightInfo = []
-
-        def weekInfo():
-            result = []
-            for ele in matrixInfo:
-                if len(ele) > 7:
-                    temp = []
-                    temp.append(ele[0])
-                    for i in range(1,8):
-                        temp.append(ele[i-8])
-                    result.append(temp)
-            return result
-
-
-        def monthInfo():
-            result = []
-            for ele in matrixInfo:
-                if len(ele) > 30:
-                    temp = []
-                    temp.append(ele[0])
-                    for i in range(1,31):
-                        temp.append(ele[i-31])
-                    result.append(temp)
-            return result
-
-        colorPool = ["red","green","yellow","blue","black"]
-        if activeDays >= 6:
-            week = weekInfo()
-            x = []
-            for i in range(1,8):
-                x.append(i)
-            for i in range(0,7):
-                j = 0
-                for ele in week:
-                    plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = colorPool[j])
-                    j+=1
-            for i in range(0,7):
-                j = 0
-                for ele in week:
-                    plt.plot(x,ele[1:], linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0] if i ==0 else "")
-                    j+=1
-            plt.legend(loc='best')
-            #check if file exist, if so delete this file and rename
-            file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/" + nickname
-            if os.path.exists(file):
-                filenumber = int(os.listdir(file)[0].split(".")[0][1:])
-                filenumber += 1
-                number = str(filenumber)
-                os.remove(file + "/w" + str(filenumber - 1) + ".png")
-                plt.savefig(file + "/w" + str(filenumber) + ".png")
-            else:
-                os.mkdir(file)
-                plt.savefig(file + "/w0.png")
-            plt.clf()
-                             
-        if activeDays >= 29:
-            month= monthInfo()
-            x = []
-            for i in range(1,31):
-                x.append(i)
-            for i in range(0,30):
-                for ele in month:
-                    plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = "red")
-            for i in range(0,30):
-                for ele in month:
-                    plt.plot(x,ele[1:], linestyle="solid",color="red",linewidth=3,label=ele[0] if i ==0 else "")
-            plt.legend(loc='best')
-            file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/" + nickname
-            if os.path.exists(file) and len(os.listdir(file)) > 1:
-                filenumber = int(os.listdir(file)[0].split(".")[0][1:])
-                filenumber += 1
-                os.remove(file + "/m" + str(filenumber - 1) + ".png")
-                plt.savefig(file + "/m" + str(filenumber) + ".png")
-            else:
-                plt.savefig(file + "/m0.png")
-            plt.clf()
-
-
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+#        activeDays = (currentUser.lastupdated - currentUser.begindate).days
+#        
+#
+#        matrixInfo = []
+#        weightInfo = []
+#        for ele in members:
+#            weight = Weight.query.filter_by(email=ele).first()
+#            if weight is not None:
+#                weightInfo.append(weight.email)
+#                temp = weight.weight.split(",")
+#                daysDifferent = (currentUser.lastupdated - weight.lastupdated).days
+#                for i in range (0,daysDifferent):
+#                    temp.pop()
+#                weightInfo += temp
+#                matrixInfo.append(weightInfo)
+#                weightInfo = []
+#
+#        def weekInfo():
+#            result = []
+#            for ele in matrixInfo:
+#                if len(ele) > 7:
+#                    temp = []
+#                    temp.append(ele[0])
+#                    for i in range(1,8):
+#                        temp.append(ele[i-8])
+#                    result.append(temp)
+#            return result
+#
+#
+#        def monthInfo():
+#            result = []
+#            for ele in matrixInfo:
+#                if len(ele) > 30:
+#                    temp = []
+#                    temp.append(ele[0])
+#                    for i in range(1,31):
+#                        temp.append(ele[i-31])
+#                    result.append(temp)
+#            return result
+#
+#        colorPool = ["red","green","yellow","blue","black"]
+#        if activeDays >= 6:
+#            week = weekInfo()
+#            x = []
+#            for i in range(1,8):
+#                x.append(i)
+#            for i in range(0,7):
+#                j = 0
+#                for ele in week:
+#                    plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = colorPool[j])
+#                    j+=1
+#            for i in range(0,7):
+#                j = 0
+#                for ele in week:
+#                    plt.plot(x,ele[1:], linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0] if i ==0 else "")
+#                    j+=1
+#            plt.legend(loc='best')
+#            #check if file exist, if so delete this file and rename
+#            file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/" + nickname
+#            if os.path.exists(file):
+#                filenumber = int(os.listdir(file)[0].split(".")[0][1:])
+#                filenumber += 1
+#                number = str(filenumber)
+#                os.remove(file + "/w" + str(filenumber - 1) + ".png")
+#                plt.savefig(file + "/w" + str(filenumber) + ".png")
+#            else:
+#                os.mkdir(file)
+#                plt.savefig(file + "/w0.png")
+#            plt.clf()
+#                             
+#        if activeDays >= 29:
+#            month= monthInfo()
+#            x = []
+#            for i in range(1,31):
+#                x.append(i)
+#            for i in range(0,30):
+#                for ele in month:
+#                    plt.plot(x[i],float(ele[i+1]), linestyle="None",marker = "o", markersize = 8, color = "red")
+#            for i in range(0,30):
+#                for ele in month:
+#                    plt.plot(x,ele[1:], linestyle="solid",color="red",linewidth=3,label=ele[0] if i ==0 else "")
+#            plt.legend(loc='best')
+#            file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/" + nickname
+#            if os.path.exists(file) and len(os.listdir(file)) > 1:
+#                filenumber = int(os.listdir(file)[0].split(".")[0][1:])
+#                filenumber += 1
+#                os.remove(file + "/m" + str(filenumber - 1) + ".png")
+#                plt.savefig(file + "/m" + str(filenumber) + ".png")
+#            else:
+#                plt.savefig(file + "/m0.png")
+#            plt.clf()
+#
 
 
 
 
-    return render_template('groupinfo.html',groupname = groupname, groupWeightInfo = groupWeightInfo, nickname = nickname, week=week, month = month, number = number)
+
+
+    return render_template('groupinfo.html',groupname = groupname, groupTotalInfo = groupTotalInfo, groupPartalInfo = groupPartalInfo, nickname = nickname, number = number)
 
 
 
