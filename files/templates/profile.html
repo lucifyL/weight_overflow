@@ -19,7 +19,7 @@
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form1.hidden_tag() }}
 
-							{{ form1.todaysweight(class="table",placeholder="enter weight for today") }}
+							{{ form1.todaysweight(class="table1",placeholder="enter weight for today") }}
 
 								{% for message in form1.todaysweight.errors %}
 								    <div class="flash">{{ message }}</div>
@@ -77,9 +77,9 @@
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form.hidden_tag() }}
 
-							{{ form.nickname(class="table",placeholder="change nickname") }}
+							{{ form.nickname(class="table1",placeholder="change nickname") }}
 
-							{{ form.target(class="table",placeholder="change target weight") }}
+							{{ form.target(class="table1",placeholder="change target weight") }}
 
 							{% if timezoneRecorded == False %}
 							<div class = "reminder">click to setup your timezone below</div>

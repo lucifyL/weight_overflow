@@ -15,44 +15,72 @@
 
 	  <div class="panel-body">
 
+	  		<form class="edit" action="{{ url_for('groupinfo',groupname = groupname) }}" method=post>
+		                	{{ form.hidden_tag() }}
+		                	<p class = "reminder1">select the days</p>
+							{{ form.select(class = "dropdownbox1") }}
+
+							{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
+		    </form>
 
 
-
-		
-			  <table class="table">
+			{% if groupTotalInfo == [] %}
+			  <table class="table table-bordered" style="text-align: center;margin-top:20px;3">
 			    <thead>
 			      <tr>
-			      	<th>rank</th>
-			        <th>name</th>
-			        <th>begin weight</th>
-			        <th>last updated weight</th>
-			        <th>loss percentage</th>
-			        <th>loss weight</th>
+			      	<th style="text-align: center;">rank</th>
+			        <th style="text-align: center;">name</th>
+			        <th style="text-align: center;">begin weight</th> 
+			        <th style="text-align: center;">last updated weight</th>
+			        <th style="text-align: center;">loss weight</th>
+			        <th style="text-align: center;">loss percentage</th>
 			      </tr>
 			    </thead>
 			    {% for ele in groupPartalInfo %}
 				    <tbody>
-				      <tr class="info">
+				      <tr>
 				        <td>{{ ele[0] }}</td>
 				        <td>{{ ele[1] }}</td>
 				        <td>{{ ele[2] }}</td>
 				        <td>{{ ele[3] }}</td>
 				        <td>{{ ele[4] }}</td>
-				        <td>{{ ele[5] }}</td>
+				        <td>{{ ele[5] }}%</td>
 				      </tr>
 				    </tbody>
 				 {% endfor %}
 			  </table>
+			 {% else %}
+				 <table class="table table-bordered" style="text-align: center;margin-top:20px;3">
+				    <thead>
+				      <tr>
+				      	<th style="text-align: center;">name</th>
+				        <th style="text-align: center;">begin date</th>
+				        <th style="text-align: center;">begin weight</th> 
+				        <th style="text-align: center;">last updated date</th>
+				        <th style="text-align: center;">last updated weight</th>
+				        <th style="text-align: center;">loss percentage</th>
+				        <th style="text-align: center;">target weight</th>
+				      </tr>
+				    </thead>
+				    {% for ele in groupTotalInfo %}
+					    <tbody>
+					      <tr>
+					        <td>{{ ele[0] }}</td>
+					        <td>{{ ele[1] }}</td>
+					        <td>{{ ele[2] }}</td>
+					        <td>{{ ele[3] }}</td>
+					        <td>{{ ele[4] }}</td>
+					        <td>{{ ele[5] }}%</td>
+					        <td>{{ ele[6] }}</td>
+					      </tr>
+					    </tbody>
+					 {% endfor %}
+				  </table>
+				 {% endif %}
 
 
 
 
-
-
-{% if number != "" %}
-<img src = "{{ url_for('static', filename = 'weightgram/' + nickname + '/w' + number + '.png') }}">    
-<img src = "{{ url_for('static', filename = 'weightgram/' + nickname + '/m' + number + '.png') }}">
-{% endif %}
 </div>
 
 

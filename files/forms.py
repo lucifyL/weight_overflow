@@ -138,4 +138,15 @@ class UserProgressForm(Form):
 
         return True
 
+class GroupChoiceForm(Form):
+    submit = SubmitField("submit")
+    choose = [((7),("week")),((14),("2 weeks")),((30),("month")),((60),("2 month")),(("max"),("after you started")),(("all"),("all"))]
+    select  = SelectField('choice',choices = choose)
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+    
+    def validate(self):
+        
+        return True
 

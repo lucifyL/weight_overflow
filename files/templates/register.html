@@ -7,30 +7,30 @@
 		                <form class="register" action="{{ url_for('register') }}" method=post>
 		                	{{ form.hidden_tag() }}
 
-							{{ form.nickname(class="table",placeholder="Nickname") }}
+							{{ form.nickname(class="table1",placeholder="Nickname") }}
 
 								{% for message in form.nickname.errors %}
 								    <div class="flash">{{ message }}</div>
 								{% endfor %}
 
-							{{ form.target(class="table",placeholder="target weight") }}
+							{{ form.target(class="table1",placeholder="target weight") }}
 
 								{% for message in form.target.errors %}
 								    <div class="flash">{{ message }}</div>
 								{% endfor %}
 
-							{{ form.email(class="table",placeholder="Email") }}
+							{{ form.email(class="table1,placeholder="Email") }}
 								{% for message in form.email.errors %}
 								    <div class="flash">{{ message }}</div>
 								{% endfor %}
 							
-							{{ form.password(class="table", placeholder="Password") }}
+							{{ form.password(class="table1", placeholder="Password") }}
 
 							  {% for message in form.password.errors %}
 							    <div class="flash">{{ message }}</div>
 							  {% endfor %}
 
-							{{ form.confirm(class="table", placeholder="repeat password") }}
+							{{ form.confirm(class="table1", placeholder="repeat password") }}
 
 							  {% for message in form.password.errors %}
 							    <div class="flash">{{ message }}</div>

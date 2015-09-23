@@ -6,7 +6,7 @@
 		                <form class="creategroup" action="{{ url_for('creategroup') }}" method=post>
 		                	{{ form.hidden_tag() }}
 
-							{{ form.groupname(class="table",placeholder="group name") }}
+							{{ form.groupname(class="table1",placeholder="group name") }}
 
 								{% for message in form.groupname.errors %}
 								    <div class="flash">{{ message }}</div>
