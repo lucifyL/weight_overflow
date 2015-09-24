@@ -23,8 +23,10 @@
 							{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
 		    </form>
 
+		    {% if groupTotalInfo == [] and groupPartalInfo == []%}
+		    <div class = reminder>please select time frame to see comparision</div>
 
-			{% if groupTotalInfo == [] %}
+			{% elif groupTotalInfo == [] %}
 			  <table class="table table-bordered" style="text-align: center;margin-top:20px;3">
 			    <thead>
 			      <tr>
@@ -37,7 +39,11 @@
 			      </tr>
 			    </thead>
 			    {% for ele in groupPartalInfo %}
+			    	{% if ele[6] == "self" %}
+				    <tbody style="color:red">
+				    {% else %}
 				    <tbody>
+				    {% endif %}
 				      <tr>
 				        <td>{{ ele[0] }}</td>
 				        <td>{{ ele[1] }}</td>
@@ -79,6 +85,11 @@
 				 {% endif %}
 
 
+
+
+{% if number != [""] %}
+	<img class = "img" src = "{{ url_for('static', filename = 'weightgram/groups/' + groupname + '/w' + number + '.png') }}">
+{% endif %}
 
 
 </div>

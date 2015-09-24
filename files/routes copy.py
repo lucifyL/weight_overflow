@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import os,os.path
 import numpy as np
 from operator import itemgetter
-from collections import OrderedDict
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -388,10 +387,8 @@ def groupinfo(groupname):
 
     groupTotalInfo = []
     groupPartalInfo = []
-    graphic = []
-    timeArray = []
-    number = [""]
-    
+
+
     def makeForm(days):
         groupPartalInfo = []
         for ele in members:
@@ -400,7 +397,7 @@ def groupinfo(groupname):
             if weight is not None:
                 daysFromLast = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.lastupdated).days
                 weightarray = weight.weight.split(",")
-                if days - daysFromLast <= len(weightarray) and daysFromLast <= days - 2:
+                if days - daysFromLast <= len(weightarray):
                     firstday = weightarray[daysFromLast - days]
                     lastday = weightarray[-1]
                     info = []
@@ -410,107 +407,41 @@ def groupinfo(groupname):
                     lossPercentage = "%.2f"%((float(firstday) - float(lastday))/float(firstday)*100)
                     info.append(float(firstday) - float(lastday))
                     info.append(float(lossPercentage))
-                    if weight.email == session['email']:
-                        info.append("self")
-                    else:
-                        info.append("members")
                     groupPartalInfo.append(info)
                     
-
-                    #get the matrix for weight information
-                    graphicInfo = []
-                    for i in range(0, days - daysFromLast):
-                        graphicInfo.append(float(weightarray[daysFromLast - days + i])/float(weightarray[daysFromLast - days]))
-                    for i in range(0, daysFromLast):
-                        graphicInfo.append(None)
                     
-                    graphicInfo = [weight.nickname] + graphicInfo
-                    graphic.append(graphicInfo)
-    
-        groupPartalInfo.sort(key=(itemgetter(-2)),reverse=True)
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+        groupPartalInfo.sort(key=(itemgetter(-1)),reverse=True)
         for i in xrange (len(groupPartalInfo)):
             groupPartalInfo[i] = [i + 1] + groupPartalInfo[i]
-
+        
         return groupPartalInfo
 
-
-
-    def makePicture(days):
-        colorPool = ["red","blue","brown","green","yellow","black","purple"]
-        weight = Weight.query.filter_by(email=session['email']).first()
-        day = []
-        dates = []
-        reduce = (days / 30) + 1
-        plt.figure(figsize = (12,4))
-        for i in xrange(days):
-            day.append(i)
-            if reduce == 0 or i%reduce == 0:
-                dates.append(str(datetime.now(pytz.timezone(weight.timezone)).date() - timedelta(i)))
-        dates.reverse()
-    
-        for i in xrange(days):
-            j = 0
-            for ele in graphic:
-                #plt.plot(day[i],ele[i + 1],linestyle="None",marker = "o", markersize = 4, color = colorPool[j])
-                plt.plot(day,ele[1:],linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0])
-                j += 1
-
-        handles, labels = plt.gca().get_legend_handles_labels()
-        by_label = OrderedDict(zip(labels, handles))
-        plt.legend(by_label.values(), by_label.keys(),loc="center left", bbox_to_anchor=(1, 0.5))
-        file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/groups/" + groupname
-        plt.xticks(day, dates, rotation=45)
-        plt.subplots_adjust(bottom=0.30)
-        if reduce != 0:
-            plt.xticks(np.arange(min(day), max(day)+1, reduce))
-        if os.path.exists(file):
-            filenumber = int(os.listdir(file)[0].split(".")[0][1:])
-            filenumber += 1
-            number[0] = str(filenumber)
-            os.remove(file + "/w" + str(filenumber - 1) + ".png")
-            plt.savefig(file + "/w" + str(filenumber) + ".png")
-        else:
-            os.mkdir(file)
-            plt.savefig(file + "/w0.png")
-            number[0] = "0"
-        plt.clf()
-        
-                    
-                    
-                    
-                    
-                    
-                    
 
 
 
 
 
     if request.method == "POST":
+        
         if form.select.data in ["7","14","30","60"]:
             groupPartalInfo = makeForm(int(form.select.data))
-            makePicture(int(form.select.data))
-            number = number[0]
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         if form.select.data == "max":
             weight = Weight.query.filter_by(email = session['email']).first()
             daysFromStart = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days + 1
             groupPartalInfo = makeForm(daysFromStart)
-            makePicture(daysFromStart)
-            number = number[0]
         if form.select.data == "all":
             #table infornation gathered from here
             for ele in members:
