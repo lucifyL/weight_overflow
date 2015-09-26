@@ -17,14 +17,14 @@
 
 	  		<form class="edit" action="{{ url_for('groupinfo',groupname = groupname) }}" method=post>
 		                	{{ form.hidden_tag() }}
-		                	<p class = "reminder1">select the days</p>
+		                	
 							{{ form.select(class = "dropdownbox1") }}
 
 							{{ form.submit(class="btn btn-success btn-sm", value="submit") }}
 		    </form>
 
 		    {% if groupTotalInfo == [] and groupPartalInfo == []%}
-		    <div class = reminder>please select time frame to see comparision</div>
+		    <div class = reminder1>please select time frame to see comparision</div>
 
 			{% elif groupTotalInfo == [] %}
 			  <table class="table table-bordered" style="text-align: center;margin-top:20px;3">
@@ -93,6 +93,43 @@
 
 
 </div>
+<div style="margin-top:20px"></div>
+
+<div class="panel panel-primary panel-transparent" style="outline:none!important;">
+	  <div class="panel-heading text-center">
+	    <h3 class="panel-title">people achieved their goal</h3>
+	  </div>
+
+	  <div class="panel-body">
+			<table class="table table-bordered" style="text-align: center;margin-top:20px;3">
+			    <thead>
+			      <tr>
+			      	<th style="text-align: center;">name</th>
+			        <th style="text-align: center;">begin date</th>
+			        <th style="text-align: center;">end date</th> 
+			        <th style="text-align: center;">begin weight</th>
+			        <th style="text-align: center;">target weight</th>
+			        <th style="text-align: center;">weight loss</th>
+			        <th style="text-align: center;">weight loss percentage</th>
+			      </tr>
+			    </thead>
+			    {% for ele in achieve %}
+				    <tbody>
+				      <tr>
+				        <td>{{ ele[0] }}</td>
+				        <td>{{ ele[1] }}</td>
+				        <td>{{ ele[2] }}</td>
+				        <td>{{ ele[3] }}</td>
+				        <td>{{ ele[4] }}</td>
+				        <td>{{ ele[5] }}</td>
+				        <td>{{ ele[6] }}%</td>
+				      </tr>
+				    </tbody>
+				 {% endfor %}
+			  </table>
+
+	  </div>
+</div>
 
 
 
@@ -101,9 +138,9 @@
 
 
 
+<div style="margin-top:400px;"></div>
 
-
-
+				<div style="color:pink;text-align: center;">Thanks for using Weight Overflow, If you have any question or suggestion, please contact me at hli43@hawk.iit.edu</div>
 
 
 {% endblock %}

@@ -42,7 +42,7 @@
 		  {% if newuser == False %}
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form2.hidden_tag() }}
-		                	<p class = "reminder1">select the days</p>
+		                	
 							{{ form2.days(class = "dropdownbox1") }}
 
 							{{ form2.submit(class="btn btn-success btn-sm", value="submit") }}
@@ -55,6 +55,8 @@
 					{% else %}
 					<p class="reminder1" style="font-size:22px;">{{ message }}</p>   
 					{% endif %}
+				{% elif warn != "" %}
+					<p class="reminder" style="font-size:22px;">{{ warn }}</p> 
 		  		{% endif %}
 
 		  {% else %}
@@ -132,14 +134,11 @@
 	 </div>
  {% endif %}
 
-<div style="margin-top:200px;"></div>
-<div class="panel panel-primary panel-transparent" style="outline:none!important;">
+<div style="margin-top:400px;"></div>
 
-			  <div class="panel-body">
-						<div style="color:pink;text-align: center;">Thanks for using Weight Overflow, If you have any question or suggestion, please contact me at hli43@hawk.iit.edu</div>
-	          </div>
-	 </div>
+				<div style="color:pink;text-align: center;">Thanks for using Weight Overflow, If you have any question or suggestion, please contact me at hli43@hawk.iit.edu</div>
 
+<div style="margin-top:40px;"></div>
 
 
 

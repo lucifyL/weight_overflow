@@ -92,7 +92,7 @@ def profile():
                 labels.reverse()
                 for i in range(0, length):
                     plt.plot(day[i],recordarray[i], linestyle="None",marker = "o", markersize = 8, color = "red")
-                    plt.plot(day, recordarray, linestyle="solid",color="green",linewidth=3,label=session['email'] if i ==0 else "")
+                    plt.plot(day, recordarray, linestyle="solid",color="green",linewidth=3,label=weight.nickname if i ==0 else "")
                 plt.legend(loc='best')
                 file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/users/" + nickname
                 plt.xticks(day, labels, rotation=45)
@@ -115,7 +115,7 @@ def profile():
                 return False
         return False
 
-
+    warn = ""
     form = EditForm()
     form1 = WeightForm()
     form2 = UserProgressForm()
@@ -218,15 +218,18 @@ def profile():
         if form2.validate_on_submit() and form2.validate():
             if form2.days.data in ["7","30"]:
                 
-                makePicture(int(form2.days.data))
+                if makePicture(int(form2.days.data)) == True:
 
-                loss = number[1] - number[2]
-                if loss < 0:
-                    message = "Seriously? are you really try to lose weight?"
+                    loss = number[1] - number[2]
+                    if loss < 0:
+                        message = "Seriously? are you really try to lose weight?"
+                    else:
+                        message = "You lose " + "%.2f"%(loss) + " Kg in " + form2.days.data + " days"
+
+                    number = number[0]
                 else:
-                    message = "You lose " + "%.2f"%(loss) + " Kg in " + form2.days.data + " days"
-
-                number = number[0]
+                    number = [""]
+                    warn = "Did you at least record twice during those days?"
             elif form2.days.data == "max":
                 weight = Weight.query.filter_by(email = session['email']).first()
                 days = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days + 1
@@ -240,7 +243,7 @@ def profile():
                     message = "You lose " + "%.2f"%(loss) + " Kg in " + str(len((Weight.query.filter_by(email = session['email']).first()).weight.split(","))) + " days"
                 number = number[0]
 
-    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number, newuser = newuser, timezoneRecorded = timezoneRecorded, message = message)
+    return render_template('profile.html',nickname = user.nickname,email = user.email,groupnameList = groupnameList, grouplist=grouplist, form = form, form1 = form1, form2 = form2, number = number, newuser = newuser, timezoneRecorded = timezoneRecorded, message = message, warn = warn)
 
 
 
@@ -391,6 +394,7 @@ def groupinfo(groupname):
     graphic = []
     timeArray = []
     number = [""]
+    achieve = []
     
     def makeForm(days):
         groupPartalInfo = []
@@ -475,8 +479,18 @@ def groupinfo(groupname):
             number[0] = "0"
         plt.clf()
         
-                    
-                    
+    for ele in Achieved.query.all():
+        info = []
+        info.append(ele.nickname)
+        info.append(ele.begindate)
+        info.append(ele.enddate)
+        info.append(ele.beginweight)
+        info.append(ele.target)
+        info.append(float(ele.beginweight) - float(ele.target))
+        info.append("%.2f"%((float(ele.beginweight) - float(ele.target)) * 100 / float(ele.beginweight)))
+        achieve.append(info)
+    achieve.sort(key=(itemgetter(-1)), reverse = True)
+    
                     
                     
                     
@@ -529,7 +543,23 @@ def groupinfo(groupname):
             groupTotalInfo.sort(key=(itemgetter(-2)), reverse = True)
 
 
-    return render_template('groupinfo.html',groupname = groupname, groupTotalInfo = groupTotalInfo, groupPartalInfo = groupPartalInfo, nickname = nickname, number = number, form = form)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return render_template('groupinfo.html',groupname = groupname, groupTotalInfo = groupTotalInfo, groupPartalInfo = groupPartalInfo, nickname = nickname, number = number, form = form,achieve = achieve)
 
 
 
