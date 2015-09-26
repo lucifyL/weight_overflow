@@ -2,54 +2,112 @@
 {% block content %}
 
 
-<div>waiting list:</div>
+<div class="text-center">
+	<h3>Welcome, {{ nickname }} !<h3>
+</div>
 
-<div>      
+{% if group.waitlist != None %}
 
-		{% if group.waitlist != None %}
-		<ul>
-				<li>group name is {{ group.groupname }}</li>	
-				<li>wait list: 
-					{% for ppl in group.waitlist.split(',') %}
-						<div>{{ ppl }}</div>
-						<form>
-							<a href="{{ ppl }},approved,{{ group.groupname }}">approve</a>
+<div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
-							<a href="{{ ppl }},deny,{{ group.groupname }}">deny</a>
-						</form>
-					{% endfor %}</li>
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">WAIT LIST</h3>
+		  </div>
+
+		  <div class="panel-body">
+		  		<table class="table table-bordered" style="text-align: center;margin-top:20px;3">
+			    <thead>
+			      <tr>
+			      	<th style="text-align: center;">nickname</th>
+			        <th style="text-align: center;">decision</th>
+			      </tr>
+			    </thead>
+			    {% for ele in group.waitlist.split(',') %}
+				    <tbody>
+				      <tr>
+				        <td>{{ users.filter_by(email = ele).first().nickname }}</td>
+				        <td>
+				        	<a class="btn btn-default text-center " style="margin-right:100px" href="{{ ele }},approved,{{ group.groupname }}">approve</a>
+
+							<a class="btn btn-default text-center" href="{{ ele }},deny,{{ group.groupname }}">deny</a>
+						</td>
+				      </tr>
+				    </tbody>
+				 {% endfor %}
+			  </table>
 
 
 
-
-		</ul>
-		{% endif %}
-
-
-
-
-
-
-
+          </div>
 
 </div>
 
-<div>member list:</div>
-<div>
-{% for ele in group.members.split(',') %}
-<div>
-	{{ ele }}
-	{% if ele != group.owner %}
-	<form>
-		<a class="btn btn-default text-center" href="{{ ele }},{{ group.groupname }}"> kick</a>
-
-	</form>
-	{% endif %}
-</div>	
+{% endif %}
 
 
-{% endfor %}
+
+
+
+
+
+<div class="panel panel-primary panel-transparent" style="outline:none!important;">
+
+		  <div class="panel-heading text-center">
+		    <h3 class="panel-title">MEMBER LIST</h3>
+		  </div>
+
+		  <div class="panel-body">
+		  		<table class="table table-bordered" style="text-align: center;margin-top:20px;3">
+			    <thead>
+			      <tr>
+			      	<th style="text-align: center;">nick name</th>
+			        <th style="text-align: center;">kick user out</th>
+			      </tr>
+			    </thead>
+			    {% for ele in group.members.split(',') %}
+				    <tbody>
+				      <tr>
+				        <td>{{ users.filter_by(email = ele).first().nickname }}</td>
+				        <td>
+				        
+				       	 {% if ele != group.owner %}
+				        	<a class="btn btn-default text-center" href="{{ ele }},{{ group.groupname }}"> kick</a>
+				         {% else %}
+				         	<div style="color:red">YOU ARE THE BOSS</div>
+				         {% endif %}
+						</td>
+				      </tr>
+				    </tbody>
+				 {% endfor %}
+			  </table>
+
+
+
+          </div>
+
 </div>
+
+
+
+
+
+
+
+
+<div style="margin-top:400px;"></div>
+
+				<div style="color:pink;text-align: center;">Thanks for using Weight Overflow, If you have any question or suggestion, please contact me at hli43@hawk.iit.edu</div>
+
+<div style="margin-top:40px;"></div>
+
+
+
+
+
+
+
+
+
 
 
 {% endblock %}

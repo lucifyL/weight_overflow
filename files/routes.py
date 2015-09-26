@@ -333,9 +333,12 @@ def joined(groupname):
 
 @app.route('/modify/<groupname>')
 def modify(groupname):
+    user = User.query.filter_by(email = session['email']).first()
+    users = User.query
+    nickname = user.nickname
     if len(groupname.split(',')) == 1:
         group = Group.query.filter_by(groupname=groupname).first()
-        return render_template('modify.html',group=group,session=session)
+        return render_template('modify.html',group=group,session=session, nickname = nickname,users = users)
     ##kick##
     elif len(groupname.split(',')) == 2:
         person = groupname.split(',')[0]
@@ -351,7 +354,7 @@ def modify(groupname):
         temp.remove(groupname)
         user.grouplist = ','.join(temp)
         db.session.commit()
-        return render_template('modify.html',group=group,session=session)
+        return render_template('modify.html',group=group,session=session, nickname = nickname, users = users)
 
 
     ##approve or deny##
@@ -375,7 +378,7 @@ def modify(groupname):
             else:
                 user.grouplist += "," + groupname
             db.session.commit()
-        return render_template('modify.html',group=group,session=session)
+        return render_template('modify.html',group=group,session=session,users = users, nickname = nickname)
 
 @app.route('/groupinfo/<groupname>', methods=['GET','POST'])
 def groupinfo(groupname):
