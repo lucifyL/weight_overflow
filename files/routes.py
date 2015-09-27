@@ -443,7 +443,7 @@ def groupinfo(groupname):
 
 
     def makePicture(days):
-        colorPool = ["red","blue","brown","green","yellow","black","purple"]
+        colorPool = ["#F0A3FF","#0075DC","#2BCE48","#FFCC99","#FFA405","#FFA8BB","#5EF1F2","#740AFF","#FFFF80","#FF5005"]
         weight = Weight.query.filter_by(email=session['email']).first()
         day = []
         dates = []
