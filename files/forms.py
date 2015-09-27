@@ -70,7 +70,7 @@ class GroupForm(Form):
             return True
 
 class WeightForm(Form):
-    todaysweight = TextField("TodaysWeight")
+    todaysweight = TextField("TodaysWeight",[validators.Required("Please enter your weight today.")])
     submit = SubmitField("submit")
     
     def __init__(self, *args, **kwargs):

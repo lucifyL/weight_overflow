@@ -116,9 +116,9 @@ def profile():
         return False
 
     warn = ""
-    form = EditForm()
-    form1 = WeightForm()
-    form2 = UserProgressForm()
+    form = EditForm(prefix = "form")
+    form1 = WeightForm(prefix = "form1")
+    form2 = UserProgressForm(prefix = "form2")
     newuser = False
     timezoneRecorded = False
     message = ""
@@ -133,10 +133,10 @@ def profile():
 
 
     if request.method == 'POST':
-        number = ["filenumber","startweight","finishweight"]
-        #for weight form
-  
-        if form1.validate_on_submit() and form1.validate():
+                #for weight form
+
+        if form1.submit.data and form1.validate():
+
             user = Weight.query.filter_by(email = session['email']).first()
 
             if user == None:
@@ -191,7 +191,7 @@ def profile():
             return redirect(url_for('profile'))
 
         #for edit form
-        if form.validate_on_submit() and form.validate():
+        if form.submit.data and form.validate():
             weight = Weight.query.filter_by(email = session['email']).first()
             user = User.query.filter_by(email = session['email']).first()
             if form.nickname.data != '':
@@ -215,7 +215,9 @@ def profile():
 
         #for user process tracking form
 
-        if form2.validate_on_submit() and form2.validate():
+        if form2.submit.data and form2.validate():
+            
+            number = ["filenumber","startweight","finishweight"]
             if form2.days.data in ["7","30"]:
                 
                 if makePicture(int(form2.days.data)) == True:
