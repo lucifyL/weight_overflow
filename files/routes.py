@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash, session, redirect, url_for
-from forms import SignupForm, SigninForm, GroupForm, WeightForm, EditForm, UserProgressForm, GroupChoiceForm
+from forms import SignupForm, SigninForm, GroupForm, WeightForm, EditForm, UserProgressForm, GroupChoiceForm, QuitGroup
 from files import app
 from models import db, User, Group, Weight, Achieved
 from sqlalchemy import func
@@ -27,7 +27,7 @@ def register():
             db.session.commit()
             session['email'] = newuser.email
             return redirect(url_for('profile'))
-            raise
+
     elif request.method == 'GET':
         return render_template('register.html', form=form)
 
@@ -301,13 +301,12 @@ def creategroup():
 @app.route('/joingroup', methods=['GET','POST'])
 def joingroup():
     if request.method == "GET":
-        choice = ""
         user = User.query.filter_by(email = session['email']).first()
         groups = Group.query.all()
         empty = False
         if len(groups) == 0:
             empty = True
-        return render_template('joingroup.html',groups=groups, empty=empty,nickname=user.nickname,choice=choice)
+        return render_template('joingroup.html',groups=groups, empty=empty,nickname=user.nickname)
     elif request.method == "POST":
         return str(len(request.form.keys()))
 
@@ -355,6 +354,11 @@ def modify(groupname):
         temp = user.grouplist.split(',')
         temp.remove(groupname)
         user.grouplist = ','.join(temp)
+#        #remove from weight gram
+#        weight = Weight.query.filter_by(email = person).first()
+#        temp = weight.groups.split(',')
+#        temp.remove(groupname)
+#        weight.groups = ','.join(temp)
         db.session.commit()
         return render_template('modify.html',group=group,session=session, nickname = nickname, users = users)
 
@@ -391,6 +395,7 @@ def groupinfo(groupname):
     user = User.query.filter_by(email = session['email']).first()
     nickname = user.nickname
     form = GroupChoiceForm()
+    form1 = QuitGroup()
 
 
 
@@ -400,12 +405,12 @@ def groupinfo(groupname):
     timeArray = []
     number = [""]
     achieve = []
+    userInfo = User.query
     
     def makeForm(days):
         groupPartalInfo = []
         for ele in members:
             weight = Weight.query.filter_by(email=ele).first()
-            print len(weight.weight.split(","))
             if weight is not None:
                 daysFromLast = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.lastupdated).days
                 weightarray = weight.weight.split(",")
@@ -446,7 +451,7 @@ def groupinfo(groupname):
 
     def makePicture(days):
         colorPool = ["#F0A3FF","#0075DC","#2BCE48","#FFCC99","#FFA405","#FFA8BB","#5EF1F2","#740AFF","#FFFF80","#FF5005"]
-        weight = Weight.query.filter_by(email=session['email']).first()
+        weight = Weight.query.first()
         day = []
         dates = []
         reduce = (days / 30) + 1
@@ -493,10 +498,10 @@ def groupinfo(groupname):
         info.append(ele.target)
         info.append(float(ele.beginweight) - float(ele.target))
         info.append("%.2f"%((float(ele.beginweight) - float(ele.target)) * 100 / float(ele.beginweight)))
+        info.append(ele.email)
         achieve.append(info)
     achieve.sort(key=(itemgetter(-1)), reverse = True)
-    
-                    
+
                     
                     
                     
@@ -551,6 +556,25 @@ def groupinfo(groupname):
 
 
 
+    if form1.groupname.data == groupname:
+        person = session['email']
+        #remove from group's member list
+        group = Group.query.filter_by(groupname=groupname).first()
+        temp = group.members.split(',')
+        temp.remove(person)
+        group.members = ','.join(temp)
+        ##remvoe from grouplist##
+        user = User.query.filter_by(email = person).first()
+        temp = user.grouplist.split(',')
+        temp.remove(groupname)
+        user.grouplist = ','.join(temp)
+#        #remove from weight gram
+#        weight = Weight.query.filter_by(email = person).first()
+#        temp = weight.groups.split(',')
+#        temp.remove(groupname)
+#        user.groups = ','.join(temp)
+        db.session.commit()
+        return redirect(url_for('profile'))
 
 
 
@@ -559,12 +583,7 @@ def groupinfo(groupname):
 
 
 
-
-
-
-
-
-    return render_template('groupinfo.html',groupname = groupname, groupTotalInfo = groupTotalInfo, groupPartalInfo = groupPartalInfo, nickname = nickname, number = number, form = form,achieve = achieve)
+    return render_template('groupinfo.html',groupname = groupname, groupTotalInfo = groupTotalInfo, groupPartalInfo = groupPartalInfo, nickname = nickname, number = number, form = form,achieve = achieve, userInfo = userInfo,form1 = form1)
 
 
 

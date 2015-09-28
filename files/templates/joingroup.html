@@ -24,7 +24,7 @@
 						{% for ele in groups %}
 
 				    			<a href="joined/{{ ele.groupname }}" class="btn btn-default text-center"> {{ ele.groupname }}</a>
-				    			
+				    			<div style="color:white;text-align: center;font-size: 16px;margin:20px;">{{ (ele.members.split(","))|length }} members</div>
 
 				    	{% endfor %}
 						</form>

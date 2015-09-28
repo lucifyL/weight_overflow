@@ -150,3 +150,11 @@ class GroupChoiceForm(Form):
         
         return True
 
+class QuitGroup(Form):
+    submit = SubmitField("submit")
+    groupname = TextField("groupname")
+
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+    
