@@ -91,8 +91,8 @@ def profile():
                         labels.append(str(datetime.now(pytz.timezone(weight.timezone)).date() - timedelta(i)))
                 labels.reverse()
                 for i in range(0, length):
-                    plt.plot(day[i],recordarray[i], linestyle="None",marker = "o", markersize = 8, color = "red")
-                    plt.plot(day, recordarray, linestyle="solid",color="green",linewidth=3,label=weight.nickname if i ==0 else "")
+                    plt.plot(day[i],recordarray[i], linestyle="None",marker = "o", markersize = 8, color = "green")
+                    plt.plot(day, recordarray, linestyle="solid",color="#2BCE48",linewidth=3,label=weight.nickname if i ==0 else "")
                 plt.legend(loc='best')
                 file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/users/" + nickname
                 plt.xticks(day, labels, rotation=45)
@@ -138,7 +138,7 @@ def profile():
         if form1.submit.data and form1.validate():
 
             user = Weight.query.filter_by(email = session['email']).first()
-
+            
             if user == None:
                 currentUser = User.query.filter_by(email = session['email']).first()
                 grouplist = User.query.filter_by(email = session['email']).first().grouplist
@@ -479,7 +479,7 @@ def groupinfo(groupname):
         day = []
         dates = []
         reduce = (days / 30) + 1
-        plt.figure(figsize = (12,4))
+        plt.figure(figsize = (18,5))
         for i in xrange(days):
             day.append(i)
             if reduce == 0 or i%reduce == 0:
@@ -555,10 +555,11 @@ def groupinfo(groupname):
         
         if form.select.data == "max":
             weight = Weight.query.filter_by(email = session['email']).first()
-            daysFromStart = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days + 1
+            daysFromStart = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days
             groupPartalInfo = makeForm(daysFromStart)
             makePicture(daysFromStart)
             number = number[0]
+
         if form.select.data == "all":
             #table infornation gathered from here
             for ele in members:
