@@ -489,9 +489,10 @@ def groupinfo(groupname):
         for i in xrange(days):
             j = 0
             for ele in graphic:
-                #plt.plot(day[i],ele[i + 1],linestyle="None",marker = "o", markersize = 4, color = colorPool[j])
-                plt.plot(day,ele[1:],linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0])
-                j += 1
+                if j < 10:
+                    #plt.plot(day[i],ele[i + 1],linestyle="None",marker = "o", markersize = 4, color = colorPool[j])
+                    plt.plot(day,ele[1:],linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0])
+                    j += 1
 
         handles, labels = plt.gca().get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
