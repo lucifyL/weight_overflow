@@ -147,35 +147,57 @@ def profile():
                 db.session.commit()
             
             if user != None:
-                #first day recording, if it's not the first day, go to else
-                temp = (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days
-                if temp > 0:
-                    user.daysAbsent = temp
-                if user.daysAbsent == 0:
-                    user.weight = "%.2f"%(float(form1.todaysweight.data))
-                #after first day
-                else:
-                    #days that this ppl is not recording the weight info, this will remain the same if
-                    #ppl try to modify today's weight.
-                    #check if user have already entered today's weight
-                    exist = False
-                    if user.lastupdated == datetime.now(pytz.timezone(user.timezone)).date():
-                        exist = True
+                if (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days == -1:
+                    
+                    weight = Weight.query.filter_by(email = session['email']).first()
+                    if user.begindate == user.lastupdated:
+                        weight.begindate = datetime.now(pytz.timezone(user.timezone)).date()
+                        weight.weight = form1.todaysweight.data
                     else:
-                        user.lastupdated = datetime.now(pytz.timezone(user.timezone)).date()
-                    #delete data back to last recorded time
-                    if exist:
-                        temp = user.weight.split(',')
-                        for i in range(0,user.daysAbsent):
-                            temp.pop()
-                        user.weight = ','.join(temp)
-                    #add data back to database
-                    last = float(user.weight.split(",")[-1])
-                    now = float(form1.todaysweight.data)
-                    differenceEachDay = (now - last)/user.daysAbsent
-                    for i in range(1,user.daysAbsent):
-                        user.weight += "," + "%.2f"%(i * differenceEachDay + last)
-                    user.weight += "," + "%.2f"%(float(form1.todaysweight.data))
+                        temp = weight.weight.split(",")
+                        temp[-2] = form1.todaysweight.data
+                        temp.pop()
+                        weight.weight = ','.join(temp)
+                        weight.daysAbsent = weight.daysAbsent - 1
+                    
+                    weight.lastupdated = datetime.now(pytz.timezone(user.timezone)).date()
+                    db.session.commit()
+                else:
+                
+                
+                
+                
+                
+                
+                    #first day recording, if it's not the first day, go to else
+                    temp = (datetime.now(pytz.timezone(user.timezone)).date() - user.lastupdated).days
+                    if temp > 0:
+                        user.daysAbsent = temp
+                    if user.daysAbsent == 0:
+                        user.weight = "%.2f"%(float(form1.todaysweight.data))
+                    #after first day
+                    else:
+                        #days that this ppl is not recording the weight info, this will remain the same if
+                        #ppl try to modify today's weight.
+                        #check if user have already entered today's weight
+                        exist = False
+                        if user.lastupdated == datetime.now(pytz.timezone(user.timezone)).date():
+                            exist = True
+                        else:
+                            user.lastupdated = datetime.now(pytz.timezone(user.timezone)).date()
+                        #delete data back to last recorded time
+                        if exist:
+                            temp = user.weight.split(',')
+                            for i in range(0,user.daysAbsent):
+                                temp.pop()
+                            user.weight = ','.join(temp)
+                        #add data back to database
+                        last = float(user.weight.split(",")[-1])
+                        now = float(form1.todaysweight.data)
+                        differenceEachDay = (now - last)/user.daysAbsent
+                        for i in range(1,user.daysAbsent):
+                            user.weight += "," + "%.2f"%(i * differenceEachDay + last)
+                        user.weight += "," + "%.2f"%(float(form1.todaysweight.data))
                 db.session.commit()
             #put user's information into achieve table if they achieve their target weight
             user = Weight.query.filter_by(email = session['email']).first()
@@ -280,7 +302,7 @@ def creategroup():
     form = GroupForm()
     if request.method == 'POST':
         if form.validate() == False:
-            return render_template('creategroup.html', form=form)
+            return render_template('creategroup.html', form=form, session = session)
         else:
             newgroup = Group(form.groupname.data, session['email'],session['email'])
             db.session.add(newgroup)
@@ -451,7 +473,9 @@ def groupinfo(groupname):
 
     def makePicture(days):
         colorPool = ["#F0A3FF","#0075DC","#2BCE48","#FFCC99","#FFA405","#FFA8BB","#5EF1F2","#740AFF","#FFFF80","#FF5005"]
-        weight = Weight.query.first()
+        weight = Weight.query.filter_by(email = session["email"]).first()
+        if weight is None:
+            weight =Weight.query.first()
         day = []
         dates = []
         reduce = (days / 30) + 1
