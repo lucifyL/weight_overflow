@@ -157,4 +157,4 @@ class QuitGroup(Form):
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
-    
+
