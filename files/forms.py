@@ -12,7 +12,7 @@ class SignupForm(Form):
     nickname = TextField("Nickname", [validators.Required(u"Please enter the user name.（请填写用户名）")])
     target = TextField("Target", [validators.Required(u"Please enter the target weight.（请填写目标体重）")])
     email = TextField("Email",  [validators.Required(u"Please enter your email address（请填写email）."), validators.Email(u"Please enter your email address（请填写email）.")])
-    password = PasswordField('New Password', [validators.Required(u"please enter your password（请填写密码）"),validators.EqualTo('confirm', message='Passwords must match（密码必须一致）')
+    password = PasswordField('New Password', [validators.Required(u"please enter your password（请填写密码）"),validators.EqualTo('confirm', message=u'Passwords must match（密码必须一致）')
                                               ])
     confirm = PasswordField('Repeat Password')
     submit = SubmitField("Create account")
@@ -111,7 +111,7 @@ class EditForm(Form):
     timezoneinfo = []
     for ele in countries:
         timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
-    result = [(('default'),('default'))]+ [(('Asia/Shanghai'),('北京时间'))]+sorted(timezoneinfo)
+    result = [(('default'),('default'))]+ [(('Asia/Shanghai'),(u'北京时间'))]+sorted(timezoneinfo)
 
     timezone = SelectField('timezone',choices=result)
 
