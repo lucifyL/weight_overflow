@@ -31,7 +31,9 @@ def register():
     elif request.method == 'GET':
         return render_template('register.html', form=form)
 
-
+@app.route('/')
+def homepage():
+    return redirect(url_for('index'))
 
 @app.route('/profile', methods=['GET','POST'])
 def profile():
@@ -94,7 +96,7 @@ def profile():
                     plt.plot(day[i],recordarray[i], linestyle="None",marker = "o", markersize = 8, color = "green")
                     plt.plot(day, recordarray, linestyle="solid",color="#2BCE48",linewidth=3,label=weight.nickname if i ==0 else "")
                 plt.legend(loc='best')
-                file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/users/" + nickname
+                file = "/var/www/weight_overflow/files/static/weightgram/users/" + nickname
                 plt.xticks(day, labels, rotation=45)
                 plt.subplots_adjust(bottom=0.30)
                 if reduce != 0:
@@ -497,7 +499,7 @@ def groupinfo(groupname):
         handles, labels = plt.gca().get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
         plt.legend(by_label.values(), by_label.keys(),loc="center left", bbox_to_anchor=(1, 0.5))
-        file = "/Users/Lucify/Documents/git_repo/weight_overflow/files/static/weightgram/groups/" + groupname
+        file = "/var/www/weight_overflow/files/static/weightgram/groups/" + groupname
         plt.xticks(day, dates, rotation=45)
         plt.subplots_adjust(bottom=0.30)
         if reduce != 0:
@@ -556,7 +558,7 @@ def groupinfo(groupname):
         
         if form.select.data == "max":
             weight = Weight.query.filter_by(email = session['email']).first()
-            daysFromStart = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days
+            daysFromStart = (datetime.now(pytz.timezone(weight.timezone)).date() - weight.begindate).days + 1
             groupPartalInfo = makeForm(daysFromStart)
             makePicture(daysFromStart)
             number = number[0]
