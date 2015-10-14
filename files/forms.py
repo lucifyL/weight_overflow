@@ -24,9 +24,9 @@ class SignupForm(Form):
         
         try:
             float(self.target.data)
-            except ValueError:
-                self.target.errors.append("please enter the targer weight correctly（请正确填写体重）")
-                return False
+        except ValueError:
+            self.target.errors.append("please enter the targer weight correctly（请正确填写体重）")
+            return False
         
         user = User.query.filter_by(email = self.email.data.lower()).first()
 
@@ -109,7 +109,7 @@ class EditForm(Form):
     timezoneinfo = []
     for ele in countries:
         timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
-result = [(('default'),('default'))]+ [(('Asia/Shanghai'),('北京时间'))]+sorted(timezoneinfo)
+    result = [(('default'),('default'))]+ [(('Asia/Shanghai'),('北京时间'))]+sorted(timezoneinfo)
 
     timezone = SelectField('timezone',choices=result)
 
