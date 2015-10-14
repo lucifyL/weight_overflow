@@ -156,13 +156,13 @@
 
 	<ul class="nav nav-fixed-top nav-justified">
 		{% if 'email' not in session %}
-	  <li role="presentation" ><a href="{{ url_for('register') }}" >Register</a></li>
-	  <li role="presentation" ><a href="{{ url_for('index') }}" >Home page</a></li>
+	  <li role="presentation" ><a href="{{ url_for('register') }}" >Register(注册）</a></li>
+	  <li role="presentation" ><a href="{{ url_for('index') }}" >Home page（主页）</a></li>
 	  	{% else %}
-      <li role="presentation"><a href="{{ url_for('creategroup') }}">Create your own group</a></li>
-      <li role="presentation"><a href="{{ url_for('joingroup') }}">Join existed group</a></li>
-      <li role="presentation"><a href="{{ url_for('profile') }}">profile</a></li>
-      <li role="presentation"><a href="{{ url_for('signout') }}">Sign Out</a></li>
+      <li role="presentation"><a href="{{ url_for('creategroup') }}">Create your own group（创建小组）</a></li>
+      <li role="presentation"><a href="{{ url_for('joingroup') }}">Join existed group（加入小组）</a></li>
+      <li role="presentation"><a href="{{ url_for('profile') }}">profile（个人主页）</a></li>
+      <li role="presentation"><a href="{{ url_for('signout') }}">Sign Out（退出）</a></li>
       {% endif %}
 	</ul>
 

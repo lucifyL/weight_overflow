@@ -12,14 +12,14 @@
  <div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
 		  <div class="panel-heading text-center">
-		    <h3 class="panel-title">record your weight today</h3>
+		    <h3 class="panel-title">record your weight today（记录今日体重）</h3>
 		  </div>
 
 		  <div class="panel-body">
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form1.hidden_tag() }}
 
-							{{ form1.todaysweight(class="table1",placeholder="enter weight for today") }}
+							{{ form1.todaysweight(class="table1",placeholder="enter weight for today（输入今日体重）") }}
 
 								{% for message in form1.todaysweight.errors %}
 								    <div class="flash">{{ message }}</div>
@@ -35,7 +35,7 @@
  <div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
 		  <div class="panel-heading text-center">
-		    <h3 class="panel-title">see your progress</h3>
+		    <h3 class="panel-title">see your progress（你的进展）</h3>
 		  </div>
 
 		  <div class="panel-body">
@@ -60,7 +60,7 @@
 		  		{% endif %}
 
 		  {% else %}
-		 	 <div class="reminder"> you need to record your weight at least twice to see your progress</div>
+		 	 <div class="reminder"> you need to record your weight at least twice to see your progress（你需要记录至少2天体重才能查询进展）</div>
 		  {% endif %}
 		  </div>
 </div>
@@ -72,22 +72,22 @@
  <div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
 		  <div class="panel-heading text-center">
-		    <h3 class="panel-title">edit your information</h3>
+		    <h3 class="panel-title">edit your information（修改个人信息）</h3>
 		  </div>
 
 		  <div class="panel-body">
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form.hidden_tag() }}
 
-							{{ form.nickname(class="table1",placeholder="change nickname") }}
+							{{ form.nickname(class="table1",placeholder="change nickname（修改昵称）") }}
 
-							{{ form.target(class="table1",placeholder="change target weight") }}
+							{{ form.target(class="table1",placeholder="change target weight（修改目标体重）") }}
 
 							{% if timezoneRecorded == False %}
-							<div class = "reminder">click to setup your timezone below</div>
+							<div class = "reminder">click to setup your timezone below（点击下方设置时区）</div>
 							{{ form.timezone(class = "dropdownbox") }}
 							{% else %}
-							<div class = "reminder1">click to change your timezone below</div>
+							<div class = "reminder1">click to change your timezone below（点击下方修改时区）</div>
 							{{ form.timezone(class = "dropdownbox1") }}
 							{% endif %}
 
@@ -121,7 +121,7 @@
 	 <div class="panel panel-primary panel-transparent" style="outline:none!important;">
 
 			  <div class="panel-heading text-center">
-			    <h3 class="panel-title">view your groups</h3>
+			    <h3 class="panel-title">view your groups（进入小组）</h3>
 			  </div>
 
 			  <div class="panel-body">

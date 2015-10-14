@@ -12,7 +12,7 @@
 	{% else %}
 		<div class="panel panel-primary panel-transparent" style="        outline:none!important;">
 			  <div class="panel-heading text-center">
-			    <h3 class="panel-title">Choose from existed groups</h3>
+			    <h3 class="panel-title">Choose from existed groups（加入小组）</h3>
 			  </div>
 
 			  <div class="panel-body">
@@ -24,7 +24,7 @@
 						{% for ele in groups %}
 
 				    			<a href="joined/{{ ele.groupname }}" class="btn btn-default text-center"> {{ ele.groupname }}</a>
-				    			<div style="color:white;text-align: center;font-size: 16px;margin:20px;">{{ (ele.members.split(","))|length }} members</div>
+				    			<div style="color:white;text-align: center;font-size: 16px;margin:20px;">{{ (ele.members.split(","))|length }} members（组员）</div>
 
 				    	{% endfor %}
 						</form>
