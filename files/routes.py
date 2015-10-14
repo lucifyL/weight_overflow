@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, flash, session, redirect, url_for
 from forms import SignupForm, SigninForm, GroupForm, WeightForm, EditForm, UserProgressForm, GroupChoiceForm, QuitGroup
 from files import app

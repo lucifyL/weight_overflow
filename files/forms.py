@@ -111,7 +111,7 @@ class EditForm(Form):
     timezoneinfo = []
     for ele in countries:
         timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
-    result = [(('default'),('default'))]+ [(('Asia/Shanghai'),('Beijing'))]+sorted(timezoneinfo)
+    result = [(('default'),('default'))]+ [(('Asia/Shanghai'),('北京时间'))]+sorted(timezoneinfo)
 
     timezone = SelectField('timezone',choices=result)
 
