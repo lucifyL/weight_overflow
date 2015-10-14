@@ -19,13 +19,13 @@
 		  		<form class="edit" action="{{ url_for('profile') }}" method=post>
 		                	{{ form1.hidden_tag() }}
 
-							{{ form1.todaysweight(class="table1",placeholder="enter weight for today（输入今日体重）") }}
+							{{ form1.todaysweight(class="table1",placeholder="enter weight for today（输入今日体重<公斤>）") }}
 
 								{% for message in form1.todaysweight.errors %}
 								    <div class="flash">{{ message }}</div>
 								{% endfor %}
 
-							{{ form1.submit(class="btn btn-success btn-sm", value="submit") }}
+							{{ form1.submit(class="btn btn-success btn-sm", value="submit（提交）") }}
 		                </form>
           </div>
 
@@ -91,7 +91,7 @@
 							{{ form.timezone(class = "dropdownbox1") }}
 							{% endif %}
 
-							{{ form.submit(class="btn btn-success btn-sm", value="edit") }}
+							{{ form.submit(class="btn btn-success btn-sm", value="edit（修改）") }}
 		                </form>
           </div>
 

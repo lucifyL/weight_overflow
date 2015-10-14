@@ -7,10 +7,10 @@ from flask import session
 from files import app
 
 class SignupForm(Form):
-    nickname = TextField("Nickname", [validators.Required("Please enter the user name.")])
-    target = TextField("Target", [validators.Required("Please enter the target weight.")])
-    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
-    password = PasswordField('New Password', [validators.Required("please enter your password"),validators.EqualTo('confirm', message='Passwords must match')
+    nickname = TextField("Nickname", [validators.Required("Please enter the user name.（请填写用户名）")])
+    target = TextField("Target", [validators.Required("Please enter the target weight.（请填写目标体重）")])
+    email = TextField("Email",  [validators.Required("Please enter your email address（请填写email）."), validators.Email("Please enter your email address（请填写email）.")])
+    password = PasswordField('New Password', [validators.Required("please enter your password（请填写密码）"),validators.EqualTo('confirm', message='Passwords must match（密码必须一致）')
                                               ])
     confirm = PasswordField('Repeat Password')
     submit = SubmitField("Create account")
@@ -21,18 +21,24 @@ class SignupForm(Form):
     def validate(self):
         if not Form.validate(self):
             return False
-
+        
+        try:
+            float(self.target.data)
+            except ValueError:
+                self.target.errors.append("please enter the targer weight correctly（请正确填写体重）")
+                return False
+        
         user = User.query.filter_by(email = self.email.data.lower()).first()
 
         if user:
-            self.email.errors.append("That email is already taken")
+            self.email.errors.append("That email is already taken（该email已被注册）")
             return False
         else:
             return True
 
 class SigninForm(Form):
-    email = TextField("Email",  [validators.Required("Please enter your email address."), validators.Email("Please enter your email address.")])
-    password = PasswordField('Password', [validators.Required("Please enter a password.")])
+    email = TextField("Email",  [validators.Required("Please enter your email address（请输入email）."), validators.Email("Please enter your email address（请输入email).")])
+    password = PasswordField('Password', [validators.Required("Please enter a password（请输入密码）.")])
     submit = SubmitField("Sign In")
                 
     def __init__(self, *args, **kwargs):
@@ -46,7 +52,7 @@ class SigninForm(Form):
         if user and user.check_password(self.password.data):
             return True
         else:
-            self.password.errors.append("Invalid e-mail or password")
+            self.password.errors.append("Invalid e-mail or password（密码或账号错误）")
             return False
 
 class GroupForm(Form):
@@ -70,7 +76,7 @@ class GroupForm(Form):
             return True
 
 class WeightForm(Form):
-    todaysweight = TextField("TodaysWeight",[validators.Required("Please enter your weight today.")])
+    todaysweight = TextField("TodaysWeight",[validators.Required("Please enter your weight today（请输入今日体重）.")])
     submit = SubmitField("submit")
     
     def __init__(self, *args, **kwargs):
@@ -86,12 +92,12 @@ class WeightForm(Form):
         user = User.query.filter_by(email = session['email'].lower()).first()
 
         if user.timezone == None:
-            self.todaysweight.errors.append("please pick your timezone before enter your weight")
+            self.todaysweight.errors.append("please pick your timezone before enter your weight（请先修改时区，再记录体重）")
             return False
         try:
             float(self.todaysweight.data)
         except ValueError:
-            self.todaysweight.errors.append("please enter the weight correctly")
+            self.todaysweight.errors.append("please enter the weight correctly（请正确填写体重）")
             return False
         
         return True
@@ -103,7 +109,7 @@ class EditForm(Form):
     timezoneinfo = []
     for ele in countries:
         timezoneinfo.append((ele['timezones'][0],ele['timezones'][0]))
-    result = [(('default'),('default'))]+sorted(timezoneinfo)
+result = [(('default'),('default'))]+ [(('Asia/Shanghai'),('北京时间'))]+sorted(timezoneinfo)
 
     timezone = SelectField('timezone',choices=result)
 
@@ -117,7 +123,7 @@ class EditForm(Form):
             try:
                 float(self.target.data)
             except ValueError:
-                self.target.errors.append("please enter the targer weight correctly")
+                self.target.errors.append("please enter the targer weight correctly（请正确填写体重）")
                 return False
 
         return True
@@ -126,7 +132,7 @@ class UserProgressForm(Form):
 
     submit = SubmitField("submit")
     
-    result = [((7),("week")),((30),("month")),(("max"),("max"))]
+    result = [((7),("week（一周）")),((30),("month（一个月）")),(("max"),("max（最大时间）"))]
 
 
     days = SelectField('days',choices = result)
@@ -140,7 +146,7 @@ class UserProgressForm(Form):
 
 class GroupChoiceForm(Form):
     submit = SubmitField("submit")
-    choose = [((7),("week")),((14),("2 weeks")),((30),("month")),((60),("2 month")),(("max"),("after you started")),(("all"),("all"))]
+    choose = [((7),("week（一周）")),((14),("2 weeks（2周）")),((30),("month（一月）")),((60),("2 month（2月）")),(("max"),("after you started（你加入之后）")),(("all"),("all（查看所有）"))]
     select  = SelectField('choice',choices = choose)
 
     def __init__(self, *args, **kwargs):
