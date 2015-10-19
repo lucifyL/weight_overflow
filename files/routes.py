@@ -12,6 +12,10 @@ import os,os.path
 import numpy as np
 from operator import itemgetter
 from collections import OrderedDict
+import matplotlib
+from matplotlib.font_manager import FontProperties
+import matplotlib.font_manager as fm
+prop = fm.FontProperties(fname='/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -96,8 +100,9 @@ def profile():
                 labels.reverse()
                 for i in range(0, length):
                     plt.plot(day[i],recordarray[i], linestyle="None",marker = "o", markersize = 8, color = "green")
-                    plt.plot(day, recordarray, linestyle="solid",color="#2BCE48",linewidth=3,label=weight.nickname if i ==0 else "")
-                plt.legend(loc='best')
+                    #zhfont1 = matplotlib.font_manager.FontProperties(fname='/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc')
+	            plt.plot(day, recordarray, linestyle="solid",color="#2BCE48",linewidth=3,label=unicode(weight.nickname) if i ==0 else "")
+                plt.legend(loc='best',prop=prop)
                 file = "/var/www/weight_overflow/files/static/weightgram/users/" + nickname
                 plt.xticks(day, labels, rotation=45)
                 plt.subplots_adjust(bottom=0.30)
@@ -495,12 +500,13 @@ def groupinfo(groupname):
             for ele in graphic:
                 if j < 10:
                     #plt.plot(day[i],ele[i + 1],linestyle="None",marker = "o", markersize = 4, color = colorPool[j])
-                    plt.plot(day,ele[1:],linestyle="solid",color=colorPool[j],linewidth=3,label=ele[0])
+		    #zhfont1 = matplotlib.font_manager.FontProperties(fname='/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc')
+                    plt.plot(day,ele[1:],linestyle="solid",color=colorPool[j],linewidth=3,label=unicode(ele[0]))
                     j += 1
 
         handles, labels = plt.gca().get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
-        plt.legend(by_label.values(), by_label.keys(),loc="center left", bbox_to_anchor=(1, 0.5))
+        plt.legend(by_label.values(), by_label.keys(),loc="center left", bbox_to_anchor=(1, 0.5),prop=prop)
         file = "/var/www/weight_overflow/files/static/weightgram/groups/" + groupname
         plt.xticks(day, dates, rotation=45)
         plt.subplots_adjust(bottom=0.30)
